@@ -482,6 +482,12 @@ contract DAO is DAOInterface, Token, TokenCreation {
             throw;
         }
 
+        // in the case a nonVoter votes, make him a voter
+        if (nonVoters[msg.sender]) {
+            nonVoters[msg.sender] = false;
+            totalNumOfNonVoter -= balances[msg.sender];
+        }
+
         if (_supportsProposal) {
             p.yea += balances[msg.sender];
             p.votedYes[msg.sender] = true;
