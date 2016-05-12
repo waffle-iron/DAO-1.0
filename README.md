@@ -12,14 +12,14 @@ Feel free to reuse to create your own Decentralized Autonomous Organization usin
 
 ## Disclaimer
 
-The future remains a work in progress. Our vision exists in a world where laws vary widely. It is important to remember that anyone who uses the generic DAO framework for The DAO or any other DAO will do so at their own risk. One can only speculate about the legal status of DAOs worldwide. Whatever one’s personal beliefs may be, people must draw their own conclusions, relying on legal advice where appropriate. The authors are not a law firm and are not in the business of offering legal advice.
+The future remains a work in progress. Our vision exists in a world where laws vary widely. It is important to remember that anyone who uses the generic DAO framework, The DAO or any other DAO will do so at their own risk. One can only speculate about the legal status of DAOs worldwide. Whatever one’s personal beliefs may be, people must draw their own conclusions, relying on legal advice where appropriate. The authors are not a law firm and are not in the business of offering legal advice.
 
 **If you create a DAO it will be your DAO, and you will be responsible for its operation.**
 
 
 
 ## Contact
-A very active community can be found on  [slack](http://slack.slock.it:3000)
+A very active community can be found on  [slack](https://daohub.slack.com)
 
 
 
