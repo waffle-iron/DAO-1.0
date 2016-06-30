@@ -1,5 +1,5 @@
 /*
-This file is part of the DAO.
+This file is part of the DaoCasino and was cloned from original DAO.
 
 The DAO is free software: you can redistribute it and/or modify
 it under the terms of the GNU lesser General Public License as published by

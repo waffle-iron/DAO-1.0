@@ -1,5 +1,5 @@
 /*
-This file is part of the DAO.
+This file is part of the DaoCasino and was cloned from original DAO.
 
 The DAO is free software: you can redistribute it and/or modify
 it under the terms of the GNU lesser General Public License as published by
@@ -26,10 +26,11 @@ Thank you ConsenSys, this contract originated from:
 https://github.com/ConsenSys/Tokens/blob/master/Token_Contracts/contracts/Standard_Token.sol
 Which is itself based on the Ethereum standardized contract APIs:
 https://github.com/ethereum/wiki/wiki/Standardized_Contract_APIs
+
+ERC20 compatible: https://github.com/ethereum/EIPs/issues/20
 */
 
 /// @title Standard Token Contract.
-
 contract TokenInterface {
     mapping (address => uint256) balances;
     mapping (address => mapping (address => uint256)) allowed;
@@ -56,7 +57,8 @@ contract TokenInterface {
     function transferFrom(address _from, address _to, uint256 _amount) returns (bool success);
 
     /// @notice `msg.sender` approves `_spender` to spend `_amount` tokens on
-    /// its behalf
+    /// its behalf. Allow _spender to withdraw from your account, multiple times, 
+    /// up to the _value amount. If this function is called again it overwrites the current allowance with _value.
     /// @param _spender The address of the account able to transfer the tokens
     /// @param _amount The amount of tokens to be approved for transfer
     /// @return Whether the approval was successful or not
@@ -71,6 +73,7 @@ contract TokenInterface {
         address _spender
     ) constant returns (uint256 remaining);
 
+// Events:
     event Transfer(address indexed _from, address indexed _to, uint256 _amount);
     event Approval(
         address indexed _owner,

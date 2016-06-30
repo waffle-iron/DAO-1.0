@@ -1,5 +1,5 @@
 /*
-This file is part of the DAO.
+This file is part of the DaoCasino and was cloned from original DAO.
 
 The DAO is free software: you can redistribute it and/or modify
 it under the terms of the GNU lesser General Public License as published by
@@ -329,6 +329,7 @@ contract DAOInterface {
     /// @return Whether the account is blocked (not allowed to transfer tokens) or not.
     function unblockMe() returns (bool);
 
+// Events:
     event ProposalAdded(
         uint indexed proposalID,
         address recipient,
@@ -388,7 +389,6 @@ contract DAO is DAOInterface, Token, TokenCreation {
     function receiveEther() returns (bool) {
         return true;
     }
-
 
     function newProposal(
         address _recipient,

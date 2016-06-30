@@ -1,5 +1,5 @@
 /*
-This file is part of the DAO.
+This file is part of the DaoCasino and was cloned from original DAO.
 
 The DAO is free software: you can redistribute it and/or modify
 it under the terms of the GNU lesser General Public License as published by
@@ -18,7 +18,7 @@ along with the DAO.  If not, see <http://www.gnu.org/licenses/>.
 
 /*
  * By default, token creation can be executed on behalf of another address using
- * the TokenCreation.sol createTokenProxy() function This contract is used as a
+ * the TokenCreation.sol createTokenProxy() function. This contract is used as a
  * fall back in case an exchange doesn't implement the "add data to a
  * transaction" feature in a timely manner, preventing it from calling
  * createTokenProxy().  Calling this contract automatically triggers a call to

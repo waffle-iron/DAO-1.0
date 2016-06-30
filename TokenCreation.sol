@@ -1,5 +1,5 @@
 /*
-This file is part of the DAO.
+This file is part of the DaoCasino and was cloned from original DAO.
 
 The DAO is free software: you can redistribute it and/or modify
 it under the terms of the GNU lesser General Public License as published by
@@ -26,11 +26,10 @@ import "./Token.sol";
 import "./ManagedAccount.sol";
 
 contract TokenCreationInterface {
-
     // End of token creation, in Unix time
     uint public closingTime;
     // Minimum fueling goal of the token creation, denominated in tokens to
-    // be created
+    // be created (not including DaoCasino reward)
     uint public minTokensToCreate;
     // True if the DAO reached its minimum fueling goal, false otherwise
     bool public isFueled;
@@ -71,7 +70,7 @@ contract TokenCreationInterface {
     /// @return The divisor used to calculate the token creation rate during
     /// the creation phase
     function divisor() constant returns (uint divisor);
-
+// Events:
     event FuelingToDate(uint value);
     event CreatedToken(address indexed to, uint amount);
     event Refund(address indexed to, uint value);
@@ -95,13 +94,38 @@ contract TokenCreation is TokenCreationInterface, Token {
             && (privateCreation == 0 || privateCreation == msg.sender)) {
 
             uint token = (msg.value * 20) / divisor();
+
+            // There is a simple attack that consists of buying tokens at 
+            // price 1 and then splittin immediately after the creation process 
+            // ends. In this case, the attacker would get more than 1Ξ for each Ξ 
+            // invested if there are people buying Ð at more than 1Ξ/100Ð.
+            // 
+            // To solve that, developers created the extraBalance account. 
+            // This account stores the extra money that the DAO gets in the final 
+            // phases above 1Ξ/100Ð.
+            //
+            // For example, if you buy 100Ð for 1.5Ξ just before the Creation phase 
+            // ends, then there will be 1Ξ that will go to the main DAO account and 
+            // 0.5Ξ that will go to the Extra Balance account.
+            //
+            // In this case, all the DTH who split immediately after the Creation 
+            // phase closes will get exactly 1Ξ/100Ð regardless what they may have 
+            // paid for each Ð.
+            //
+            // The ether in the Extra Balance account can go to the main DAO when the 
+            // DAO has spent as much ether as the Extra Balance account has. That 
+            // happens by making a proposal to call the payOut() function of the 
+            // Extra Balance account with the DAO itself as the beneficiary.
             extraBalance.call.value(msg.value - token)();
+
             balances[_tokenHolder] += token;
             totalSupply += token;
             weiGiven[_tokenHolder] += msg.value;
             CreatedToken(_tokenHolder, token);
+
             if (totalSupply >= minTokensToCreate && !isFueled) {
                 isFueled = true;
+
                 FuelingToDate(totalSupply);
             }
             return true;
