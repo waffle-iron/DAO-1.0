@@ -33,10 +33,16 @@ contract TokenCreationInterface {
     uint public minTokensToCreate;
     // True if the DAO reached its minimum fueling goal, false otherwise
     bool public isFueled;
+    // True if DaoCasino team got extra rewards
+    bool public isTeamRewarded;
     // For DAO splits - if privateCreation is 0, then it is a public token
     // creation, otherwise only the address stored in privateCreation is
     // allowed to create tokens
     address public privateCreation;
+    // This is our DaoCasino team address.
+    // After DAO is fueled -> we will get 15% token here
+    // (10% as reward + 5% for development)
+    address public teamRewardAccount;
     // hold extra ether which has been sent after the DAO token
     // creation rate has increased
     ManagedAccount public extraBalance;
@@ -63,6 +69,10 @@ contract TokenCreationInterface {
     /// @return Whether the token creation was successful
     function createTokenProxy(address _tokenHolder) returns (bool success);
 
+    /// @notice After ICO is finished - call this method in order to receive 
+    /// DaoCasino extra team reward
+    function rewardTeam() returns (bool success);
+
     /// @notice Refund `msg.sender` in the case the Token Creation did
     /// not reach its minimum fueling goal
     function refund();
@@ -81,11 +91,13 @@ contract TokenCreation is TokenCreationInterface, Token {
     function TokenCreation(
         uint _minTokensToCreate,
         uint _closingTime,
-        address _privateCreation) {
+        address _privateCreation,
+        address _teamRewardAccount) {
 
         closingTime = _closingTime;
         minTokensToCreate = _minTokensToCreate;
         privateCreation = _privateCreation;
+        teamRewardAccount = _teamRewardAccount;
         extraBalance = new ManagedAccount(address(this), true);
     }
 
@@ -125,12 +137,30 @@ contract TokenCreation is TokenCreationInterface, Token {
 
             if (totalSupply >= minTokensToCreate && !isFueled) {
                 isFueled = true;
-
                 FuelingToDate(totalSupply);
             }
             return true;
         }
         throw;
+    }
+
+    function rewardTeam() returns (bool success) {
+        // Reward our team
+        // only if DAO is fueled
+        if (!isTeamRewarded && isFueled && (msg.sender == teamRewardAccount)) { 
+            // TODO: fix real -> uint. Somehow this is converted to real values (((
+            // TODO: please see 'tests/scenarios/fuel/run.py' for comments
+            // TODO: please run 'fuel' tests to see it fails
+            uint teamRewardInTokens = uint((totalSupply / 85.0) * 15.0);
+
+            balances[teamRewardAccount] += teamRewardInTokens;
+            totalSupply += teamRewardInTokens;
+            isTeamRewarded = true;   // one time only
+
+            CreatedToken(teamRewardAccount, teamRewardInTokens);
+            return true;
+        }
+        return false;
     }
 
     function refund() noEther {

@@ -26,6 +26,10 @@ def run(ctx):
             "amounts": arr_str(ctx.token_amounts)
         }
     )
+
+    print("MIN TOKENS TO CREATE: {}".format(ctx.args.deploy_min_tokens_to_create))
+    print("AMOUNTS: {}".format(arr_str(ctx.token_amounts)))
+
     print(
         "Notice: Fueling period is {} seconds so the test will wait "
         "as much".format(creation_secs)
@@ -35,10 +39,21 @@ def run(ctx):
         [x/1.5 for x in ctx.token_amounts]
         if ctx.scenario_uses_extrabalance() else ctx.token_amounts
     )
+
     adjusted_supply = (
-        ctx.total_supply / 1.5
+        (ctx.total_supply / 1.5)
         if ctx.scenario_uses_extrabalance() else ctx.total_supply
     )
+
+    # Calculate extra 15% team reward
+    # TODO: if we convert to int -> test will fail like that:
+    # ERROR: Expected 95 for 'total_supply' but got 95.2941176471
+    team_reward = int(((ctx.total_supply) / 85.0) * 15.0)
+
+    adjusted_supply += team_reward
+    # curator gets reward as a team
+    # in real world we will pass some other address for teamRewardAccount 
+    adjusted_amounts[0] += team_reward
 
     ctx.execute(expected={
         "dao_fueled": True,

@@ -358,14 +358,17 @@ contract DAO is DAOInterface, Token, TokenCreation {
         uint _proposalDeposit,
         uint _minTokensToCreate,
         uint _closingTime,
-        address _privateCreation
-    ) TokenCreation(_minTokensToCreate, _closingTime, _privateCreation) {
+        address _privateCreation,
+        address _teamRewardAccount      // added by DaoCasino
+    ) TokenCreation(_minTokensToCreate, _closingTime, _privateCreation, _teamRewardAccount) {
 
         curator = _curator;
         daoCreator = _daoCreator;
         proposalDeposit = _proposalDeposit;
+
         rewardAccount = new ManagedAccount(address(this), false);
         DAOrewardAccount = new ManagedAccount(address(this), false);
+
         if (address(rewardAccount) == 0)
             throw;
         if (address(DAOrewardAccount) == 0)
@@ -845,7 +848,10 @@ contract DAO is DAOInterface, Token, TokenCreation {
 
     function createNewDAO(address _newCurator) internal returns (DAO _newDAO) {
         NewCurator(_newCurator);
-        return daoCreator.createDAO(_newCurator, 0, 0, now + splitExecutionPeriod);
+
+        // will deny anyone from getting extra team reward tokens...
+        address teamAddress = 0;
+        return daoCreator.createDAO(_newCurator, 0, 0, now + splitExecutionPeriod, teamAddress);
     }
 
     function numberOfProposals() constant returns (uint _numberOfProposals) {
@@ -879,7 +885,8 @@ contract DAO_Creator {
         address _curator,
         uint _proposalDeposit,
         uint _minTokensToCreate,
-        uint _closingTime
+        uint _closingTime,
+        address _teamRewardAccount
     ) returns (DAO _newDAO) {
 
         return new DAO(
@@ -888,7 +895,8 @@ contract DAO_Creator {
             _proposalDeposit,
             _minTokensToCreate,
             _closingTime,
-            msg.sender
+            msg.sender,
+            _teamRewardAccount
         );
     }
 }

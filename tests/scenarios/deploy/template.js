@@ -1,4 +1,8 @@
 var _curator = web3.eth.accounts[0];
+// curator (first one) will receive all team reward.
+// In real life it will be some real team address
+var _teamAccount = _curator;
+
 var daoContract = web3.eth.contract($dao_abi);
 console.log("Creating DAOCreator Contract");
 var creatorContract = web3.eth.contract($creator_abi);
@@ -20,6 +24,7 @@ var _daoCreatorContract = creatorContract.new(
 	        web3.toWei($min_tokens_to_create, "ether"),
 	        $closing_time,
             0,
+            _teamAccount,  // team account 
 		    {
 		        from: web3.eth.accounts[0],
 		        data: '$dao_bin',
