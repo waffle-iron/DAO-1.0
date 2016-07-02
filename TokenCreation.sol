@@ -160,7 +160,7 @@ contract TokenCreation is TokenCreationInterface, Token {
             CreatedToken(teamRewardAccount, teamRewardInTokens);
             return true;
         }
-        return false;
+        throw;
     }
 
     function refund() noEther {

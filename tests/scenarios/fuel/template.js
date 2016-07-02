@@ -14,6 +14,8 @@ for (i = 0; i < eth.accounts.length; i++) {
 checkWork();
 
 // now we are ready to reward the team
+// TODO: uncomment when real -> uint will be fixed
+/*
 console.log("Calling rewardTeam")
 var _curator = web3.eth.accounts[0];
 dao.rewardTeam.sendTransaction({
@@ -21,6 +23,7 @@ dao.rewardTeam.sendTransaction({
   gas:200000,
 });
 checkWork();
+*/
 
 setTimeout(function() {
     miner.stop();

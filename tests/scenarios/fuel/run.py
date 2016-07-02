@@ -50,10 +50,11 @@ def run(ctx):
     # ERROR: Expected 95 for 'total_supply' but got 95.2941176471
     team_reward = int(((ctx.total_supply) / 85.0) * 15.0)
 
-    adjusted_supply += team_reward
-    # curator gets reward as a team
-    # in real world we will pass some other address for teamRewardAccount 
-    adjusted_amounts[0] += team_reward
+    # TODO: uncomment
+    #adjusted_supply += team_reward
+
+    # TODO: uncomment
+    #adjusted_amounts[0] += team_reward
 
     ctx.execute(expected={
         "dao_fueled": True,
