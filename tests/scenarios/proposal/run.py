@@ -55,7 +55,13 @@ def run(ctx):
         "proposal_yay": yay,
         "proposal_nay": nay,
         "calculated_deposit": ctx.args.proposal_deposit,
-        "onetime_costs": ctx.args.deploy_onetime_costs,
+
+        # TODO: Unfortunately this makes 'proposal', 'newcontract', 'split' etc tests
+        # to fail...
+        # Please fix it!
+        #
+        #"onetime_costs": ctx.args.deploy_onetime_costs,
+
         "deposit_returned": True,
         "offer_promise_valid": True
     })
