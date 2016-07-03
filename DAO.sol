@@ -31,10 +31,12 @@ contract DAOInterface {
     uint constant creationGracePeriod = 40 days;
     // The minimum debate period that a generic proposal can have
     uint constant minProposalDebatePeriod = 2 weeks;
+
     // The minimum debate period that a split proposal can have
-    uint constant minSplitDebatePeriod = 1 weeks;
+    //uint constant minSplitDebatePeriod = 1 weeks;
     // Period of days inside which it's possible to execute a DAO split
-    uint constant splitExecutionPeriod = 27 days;
+    //uint constant splitExecutionPeriod = 27 days;
+
     // Period of time after which the minimum Quorum is halved
     uint constant quorumHalvingPeriod = 25 weeks;
     // Period after which a proposal is closed
@@ -248,10 +250,12 @@ contract DAOInterface {
     /// will create a new DAO and send the sender's portion of the remaining
     /// ether and Reward Tokens to the new DAO. It will also burn the DAO Tokens
     /// of the sender.
+    /*
     function splitDAO(
         uint _proposalID,
         address _newCurator
     ) returns (bool _success);
+    */
 
     /// @dev can only be called by the DAO itself through a proposal
     /// updates the contract of the DAO by sending all ether and rewardTokens
@@ -408,7 +412,7 @@ contract DAO is DAOInterface, Token, TokenCreation {
             || _transactionData.length != 0
             || _recipient == curator
             || msg.value > 0
-            || _debatingPeriod < minSplitDebatePeriod)) {
+            /*|| _debatingPeriod < minSplitDebatePeriod*/)) {
             throw;
         } else if (
             !_newCurator
@@ -512,9 +516,12 @@ contract DAO is DAOInterface, Token, TokenCreation {
 
         Proposal p = proposals[_proposalID];
 
-        uint waitPeriod = p.newCurator
-            ? splitExecutionPeriod
-            : executeProposalPeriod;
+        //uint waitPeriod = p.newCurator
+        //    ? splitExecutionPeriod
+        //    : executeProposalPeriod;
+
+        uint waitPeriod = executeProposalPeriod;
+
         // If we are over deadline and waiting period, assert proposal is closed
         if (p.open && now > p.votingDeadline + waitPeriod) {
             closeProposal(_proposalID);
@@ -599,6 +606,7 @@ contract DAO is DAOInterface, Token, TokenCreation {
         p.open = false;
     }
 
+    /*
     function splitDAO(
         uint _proposalID,
         address _newCurator
@@ -673,9 +681,13 @@ contract DAO is DAOInterface, Token, TokenCreation {
         paidOut[msg.sender] = 0;
         return true;
     }
+    */
 
     function newContract(address _newContract){
-        if (msg.sender != address(this) || !allowedRecipients[_newContract]) return;
+        if (msg.sender != address(this) || !allowedRecipients[_newContract]) {
+            return;
+        }
+
         // move all ether
         if (!_newContract.call.value(address(this).balance)()) {
             throw;
@@ -846,6 +858,7 @@ contract DAO is DAOInterface, Token, TokenCreation {
         }
     }
 
+    /*
     function createNewDAO(address _newCurator) internal returns (DAO _newDAO) {
         NewCurator(_newCurator);
 
@@ -853,6 +866,7 @@ contract DAO is DAOInterface, Token, TokenCreation {
         address teamAddress = 0;
         return daoCreator.createDAO(_newCurator, 0, 0, now + splitExecutionPeriod, teamAddress);
     }
+    */
 
     function numberOfProposals() constant returns (uint _numberOfProposals) {
         // Don't count index 0. It's used by isBlocked() and exists from start
