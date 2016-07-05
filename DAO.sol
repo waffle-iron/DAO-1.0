@@ -23,6 +23,7 @@ to automate organizational governance and decision-making.
 
 import "./TokenCreation.sol";
 import "./ManagedAccount.sol";
+import "./DaoCasino.sol";
 
 contract DAOInterface {
 
@@ -348,8 +349,7 @@ contract DAOInterface {
 }
 
 // The DAO contract itself
-contract DAO is DAOInterface, Token, TokenCreation {
-
+contract DAO is DAOInterface, DAOCasino, Token, TokenCreation {
     // Modifier that allows only shareholders to vote and create new proposals
     modifier onlyTokenholders {
         if (balanceOf(msg.sender) == 0) throw;

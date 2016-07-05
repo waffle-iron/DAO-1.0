@@ -23,6 +23,14 @@ Feel free to use as a template for your own proposal.
 
 import "./DAO.sol";
 
+// 1 - Set all variables
+// 2 - Deploy your Offer
+// 3 - Post your proposal on a forum (In your post, please include the address of the deployed contract, a link to its source code, compilation instructions and the date, time and link of the Google hangout (preferred method) you will use to confirm your identity. A link to the details of your proposal should also be included)
+// 4 - Wait for verification
+// 5 - Curators will add your address to white-list
+// 6 - You can call 'newProposal'
+// 7 - Wait for voting
+// 8 - executeProposal will be called 
 contract SampleOffer {
 
     uint public totalCosts;
