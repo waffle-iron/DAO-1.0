@@ -32,9 +32,9 @@ contract DAOCasinoInterface {
     /// @return isRandGenerated - if false -> please wait more
     function getRandOraclized(uint randId) constant returns(bool isRandGenerated, uint randValue);
 
-// Referalls:
+// Referrals:
     // Client => Referrer
-    // Referrer - A Member account, that receives a percentage of referral fees.
+    // Referrer - An account, that receives a percentage of referral fees.
     mapping (address => address) referrals;
 
     /// @notice Can be called only by TheDAO to mitigate risk of cheating
@@ -42,6 +42,38 @@ contract DAOCasinoInterface {
     function setReferral(address client, address referrer) /*onlyCurator*/ returns (bool isSet);
 }
 
+// TODO: 
+contract Platform {
+    struct Game {
+        uint proposalID;      // see proposals array
+        string name;
+        string description;
+        string urlPic;
+        bool showInStore;
+
+        // TODO: ...
+    };
+    Game[] public games;
+
+    /// @notice If you have already existing Game: 
+    /// 1) Make a proposal "Please add my game to platform" (pass fee to that contract)
+    /// 2) Wait for proposal to be passed
+    /// 3) Call addGameToStore with proposal ID 
+    ///
+    /// If you want to develop new game
+    /// 1) Create 1st proposal "Give me money to develop cool new game"(return investment to that contract)
+    /// 2) Create 2nd proposal "Please add my game to platform" (pass fee to that contract)
+    /// 
+    function addGameToStore(
+        uint _proposalID, 
+        string _name, 
+        string _description, 
+        string _urlPic) return (uint gameID);
+
+    function removeGameFromStore(uint _gameID) return (bool success);
+}
+
+// TODO: 
 contract DAOCasino is DAOCasinoInterface {
 
     function generateRandOraclized() returns (uint randId){
@@ -55,6 +87,7 @@ contract DAOCasino is DAOCasinoInterface {
         return;
     }
 
+    // TODO: only curator?
     function setReferral(address client, address referrer) /*onlyCurator*/ returns (bool isSet){
         isSet = false;
         return;
