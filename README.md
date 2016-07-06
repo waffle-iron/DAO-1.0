@@ -1,43 +1,15 @@
-# The DAO
+# DaoCasino
 
+## What is it?
+A Special DAO (Decentralized Autonomous Organization) framework written in Solidity to run on the Ethereum blockchain. We used original The DAO code and added these changes:
 
-## What is it? Currently at $100,000,000!!!
-A Standard DAO (Decentralized Autonomous Organization) framework written in Solidity to run on the Ethereum blockchain and instantiated at address 0xbb9bc244d798123fde783fcc1c72d3bb8c189413 immutably for all time.
+* Removed split functionality - in order to make things easier
+* Added teamRewardAccount - DaoCasino team will be rewarded tokens during ICO
+* Added DaoCasino.sol
 
 Feel free to reuse to create your own Decentralized Autonomous Organization using this framework.
 
-**Reference:** *"Decentralized autonomous organization to automate governance" -* [White Paper](https://download.slock.it/public/DAO/WhitePaper.pdf) - [Primer](https://blog.slock.it/a-primer-to-the-decentralized-autonomous-organization-dao-69fb125bd3cd)
-
-
-
-## Disclaimer
-
-The future remains a work in progress. Our vision exists in a world where laws vary widely. It is important to remember that anyone who uses the generic DAO framework, The DAO or any other DAO will do so at their own risk. One can only speculate about the legal status of DAOs worldwide. Whatever one’s personal beliefs may be, people must draw their own conclusions, relying on legal advice where appropriate. The authors are not a law firm and are not in the business of offering legal advice.
-
-**If you create a DAO it will be your DAO, and you will be responsible for its operation.**
-
-
-
-## Contact
-A very active community can be found on  [slack](https://daohub.slack.com)
-
-
-
-
-
-
 ## Overview
-
-Our Standard DAO Framework allows people to create Decentralized Autonomous Organizations (DAOs) governed by the code in this repository written immutably to the blockchain.
-
-We are making the Standard DAO Framework we developed free and open source, so it can be reused by anyone wishing to put together a transparent organization where governance and decision making systems are immutably programmed in the Ethereum blockchain. This code been reviewed by hundreds of pairs of eyes from our community and by one of the most respected auditing companies in the world, Deja Vu.
-
-This DAO model is open source under the LGPL, so it can be reused by anyone wishing to put together a transparent organization where governance and decision making system are immutably programmed in the Blockchain.
-
-Note: Although the word "contract" is used in The DAO’s code, the term is a programming convention and is not being used as a legal term of art. The term is a programming convention, not a representation that the code is in and of itself a legally binding and enforceable contract. If you have questions about legal enforceability, consult with legal counsel.
-
-
-
 
 
 
@@ -61,16 +33,14 @@ Basic account, used by the DAO contract to separately manage both the rewards an
 ### DAOTokenCreationProxyTransferer.sol
 This contract is used as a fall back in case an exchange doesn't implement the "add data to a transaction" feature in a timely manner, preventing it from calling createTokenProxy().
 
-
-
-
-
+### DaoCasino.sol
+TODO
 
 
 ## Licensing
-The DAO is free software: you can redistribute it and/or modify it under the terms of the GNU lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+DaoCasino is free software: you can redistribute it and/or modify it under the terms of the GNU lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-The DAO is distributed in the hope that it will be useful,
+DaoCasino is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU lesser General Public License for more details.
 
 A copy of the GNU lesser General Public License is included
