@@ -16,21 +16,19 @@ along with the DAO.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 contract DAOCasinoInterface {
-    struct RandOraclized{
-         address user;
-         uint result;    
-         bool isRandGenerated;
-    }
-    mapping (uint => RandOraclized) rands;
+    function getRewardAddress() returns (address rewardAddress);
 
 // Rand:
-    /// @notice Add query for oracle to generate random number.
-    /// @return ID of "get random" query. Call getRandOraclized and pass that ID. 
-    function generateRandOraclized() returns (uint randId);
+    /// @notice Before calling rand - 
+    function getRandOraclizedPrice() returns (uint priceInWei);
 
-    /// @notice Get random number
-    /// @return isRandGenerated - if false -> please wait more
-    function getRandOraclized(uint randId) constant returns(bool isRandGenerated, uint randValue);
+    /// @notice Add query for oracle to generate random number.
+    /// Call it like this:
+    ///   bytes32 randId = daoCasino.generateRandOraclized.value(price)();
+    /// Will call in your contract:
+    ///   function __callback(bytes32 myid, string result, bytes proof);
+    /// @return ID of "get random" query. Call getRandOraclized and pass that ID. 
+    function generateRandOraclized() returns (bytes32 randId);
 
 // Referrals:
     // Client => Referrer
@@ -54,7 +52,8 @@ contract Platform {
         bool showInStore;
 
         // TODO: ...
-    };
+    }
+
     Game[] public games;
 
     /// @notice If you have already existing Game: 
@@ -70,22 +69,20 @@ contract Platform {
         uint _proposalID, 
         string _name, 
         string _description, 
-        string _urlPic) return (uint gameID);
+        string _urlPic) returns (uint gameID);
 
-    function removeGameFromStore(uint _gameID) return (bool success);
+    function removeGameFromStore(uint _gameID) returns (bool success);
 }
 
 // TODO: 
 contract DAOCasino is DAOCasinoInterface {
-
-    function generateRandOraclized() returns (uint randId){
-        randId = 0;
+    function getRandOraclizedPrice() returns (uint priceInWei) {
+        priceInWei = 0;
         return;
     }
 
-    function getRandOraclized(uint randId) constant returns(bool isRandGenerated, uint randValue){
-        isRandGenerated = false;
-        randValue = 0;
+    function generateRandOraclized() returns (bytes32 randId){
+        randId = 0;
         return;
     }
 
