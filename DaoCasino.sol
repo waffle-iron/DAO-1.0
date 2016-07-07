@@ -35,11 +35,13 @@ contract DAOCasinoInterface {
 // Referrals:
     // Client => Referrer
     // Referrer - An account, that receives a percentage of referral fees.
-    mapping (address => address) referrals;
+    mapping (address => address) referrers;
 
-    /// @notice Can be called only by TheDAO to mitigate risk of cheating
-    /// @return If true -> everything is OK, if false -> this address was already set
-    function setReferral(address client, address referrer) /*onlyCurator*/ returns (bool isSet);
+    /// @notice Must be called by a player. 
+    /// 1) If player is alredy has associated referrer -> throw
+    /// 2) If player has no associated referrer, but already played -> throw
+    /// @return If true -> everything is OK
+    function setReferrer(address player, address referrer) returns (bool isSet);
 }
 
 // TODO: 
@@ -87,8 +89,7 @@ contract DAOCasino is DAOCasinoInterface {
         return;
     }
 
-    // TODO: only curator?
-    function setReferral(address client, address referrer) /*onlyCurator*/ returns (bool isSet){
+    function setReferrer(address player, address referrer) returns (bool isSet){
         isSet = false;
         return;
     }
