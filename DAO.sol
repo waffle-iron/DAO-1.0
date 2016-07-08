@@ -104,7 +104,7 @@ contract DAOInterface {
         // or if `newCurator` is true, the proposed Curator of
         // the new DAO).
         address recipient;
-        // The amount to transfer to `recipient` if the proposal is accepted.
+        // The amount in Wei to transfer to `recipient` if the proposal is accepted.
         uint amount;
         // A plain text description of the proposal
         string description;
@@ -196,6 +196,14 @@ contract DAOInterface {
     /// @param _newCurator Bool defining whether this proposal is about
     /// a new Curator or not
     /// @return The proposal ID. Needed for voting on the proposal
+    /// ************************************************************************
+    /// After the contract is whitelisted, 
+    /// the contractor can now create a new Proposal to get their proposal signed.
+    /// !!! 
+    ///   In order to do that -> set '0x2ca15122' as a _transactionData in 'newProposal' and 
+    ///   'executeProposal' calls.
+    ///   see here - https://github.com/slockit/DAO/wiki/PFOffer-Workflow
+    /// !!!
     function newProposal(
         address _recipient,
         uint _amount,
@@ -587,6 +595,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
                 && p.recipient != address(extraBalance)
                 && p.recipient != address(curator)) {
 
+                // issue more reward tokens
                 rewardToken[address(this)] += p.amount;
                 totalRewardToken += p.amount;
             }
@@ -712,6 +721,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
             (rewardToken[msg.sender] * DAOrewardAccount.accumulatedInput()) /
             totalRewardToken - DAOpaidOut[msg.sender];
         if(_toMembers) {
+            // msg.sender must be owner of DAOrewardAccount
             if (!DAOrewardAccount.payOut(dao.rewardAccount(), reward))
                 throw;
             }

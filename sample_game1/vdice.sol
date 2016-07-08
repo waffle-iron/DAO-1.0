@@ -1,4 +1,7 @@
-import "./DaoCasino.sol";
+
+// example:
+// solc DAO=/home/tonykent/DAO DAOSecurity.sol
+import "DAO/DaoCasino.sol";
 
 /// @notice Different helpers function go here
 library Helpers {
