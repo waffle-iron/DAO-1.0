@@ -15,30 +15,32 @@ You should have received a copy of the GNU lesser General Public License
 along with the DAO.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-/* 
-Sample Proposal from a Contractor to the DAO. 
-Feel free to use as a template for your own proposal.
-*/
-
-import "./DAO.sol";
+// example:
+// solc DAO=/home/tonykent/DAO vdice_proposal.sol
+import "DAO/DAO.sol";
+import "vdice.sol";
 
 // 1 - Set all variables
-// 2 - Deploy your Offer
-// 3 - Post your proposal on a forum (In your post, please include the address of the deployed contract, a link to its source code, compilation instructions and the date, time and link of the Google hangout (preferred method) you will use to confirm your identity. A link to the details of your proposal should also be included)
+// 2 - Deploy your Proposal 
+// 3 - Post your proposal on a forum (In your post, please include the address of the deployed 
+//     contract, a link to its source code, compilation instructions and the date, time and link 
+//     of the Google hangout (preferred method) you will use to confirm your identity. A link to 
+//     the details of your proposal should also be included).
 // 4 - Wait for verification
 // 5 - Curators will add your address to white-list
 // 6 - You can call 'newProposal'
 // 7 - Wait for voting
-// 8 - executeProposal will be called 
-contract SampleOffer {
+// 8 - executeProposal will be called -> it will call your sign() function if Proposal is accepted
+contract SampleProposal {
 
-    uint public totalCosts;
-    uint public oneTimeCosts;
-    uint public dailyCosts;
+    uint public totalCosts;   // amount of money to invest from DaoCasino
+    uint public oneTimeCosts; // amount of money to move to contractor right when this proposal
+                              // is accepted
+    uint public dailyCosts;   // amount of money contractor can get each day from this contract
 
     // the entity that has rights to withdraw ether to perform its project.
     address public contractor;
+
     bytes32 public hashOfTheTerms;
     uint public minDailyCosts;
     uint public paidOut;
@@ -46,13 +48,12 @@ contract SampleOffer {
     uint public dateOfSignature;
 
     // the DAO that gives ether to the Contractor. It signs off
-    // the Offer, can adjust daily withdraw limit or even fire the
+    // the Proposal, can adjust daily withdraw limit or even fire the
     // Contractor.
     DAO public client; 
+    Dice public vdiceGame;
 
-    bool public promiseValid;
-    uint public rewardDivisor;
-    uint public deploymentReward;
+    bool public promiseValid; // is signed by DaoCasino?
 
     modifier callingRestriction {
         if (promiseValid) {
@@ -70,14 +71,17 @@ contract SampleOffer {
         _
     }
 
-    function SampleOffer(
+    function SampleProposal(
         address _contractor,
+        address _vdiceGameAddress,
         bytes32 _hashOfTheTerms,
         uint _totalCosts,
         uint _oneTimeCosts,
         uint _minDailyCosts
     ) {
         contractor = _contractor;
+        vdiceGame = Dice(_vdiceGameAddress);
+
         hashOfTheTerms = _hashOfTheTerms;
         totalCosts = _totalCosts;
         oneTimeCosts = _oneTimeCosts;
@@ -94,22 +98,33 @@ contract SampleOffer {
     function sign() {
         if (msg.value < totalCosts || dateOfSignature != 0)
             throw;
+        if (msg.value < oneTimeCosts){
+            throw; 
+        }
         if (!contractor.send(oneTimeCosts))
             throw;
         client = DAO(msg.sender);
         dateOfSignature = now;
         promiseValid = true;
-    }
 
-    function setDailyCosts(uint _dailyCosts) onlyClient {
-        if (dailyCosts >= minDailyCosts)
-            dailyCosts = _dailyCosts;
+        // Send funds to game
+        // You can also use getDailyPayment() instead
+        uint sendToGame = (msg.value - oneTimeCosts);    // must be positive (see check above)
+        uint constant safeGas = 25000;
+        if(!vdiceGame.proposalIsAccepted.call.gas(safeGas).value(sendToGame)()){
+            // TODO: handle that 
+        }
     }
 
     // "fire the contractor"
     function returnRemainingMoney() onlyClient {
         if (client.receiveEther.value(this.balance)())
             promiseValid = false;
+    }
+
+    function setDailyCosts(uint _dailyCosts) onlyClient {
+        if (dailyCosts >= minDailyCosts)
+            dailyCosts = _dailyCosts;
     }
 
     function getDailyPayment() {
@@ -120,56 +135,8 @@ contract SampleOffer {
             paidOut += amount;
     }
 
-    function setRewardDivisor(uint _rewardDivisor) callingRestriction {
-        if (_rewardDivisor < 20)
-            throw; // 5% is the default max reward
-        rewardDivisor = _rewardDivisor;
-    }
-
-    function setDeploymentFee(uint _deploymentReward) callingRestriction {
-        if (deploymentReward > 10 ether)
-            throw; // TODO, set a max defined by Curator, or ideally oracle (set in euro)
-        deploymentReward = _deploymentReward;
-    }
-
     function updateClientAddress(DAO _newClient) callingRestriction {
         client = _newClient;
-    }
-
-    // interface for Ethereum Computer
-    function payOneTimeReward() returns(bool) {
-        if (msg.value < deploymentReward)
-            throw;
-        if (promiseValid) {
-            if (client.DAOrewardAccount().call.value(msg.value)()) {
-                return true;
-            } else {
-                throw;
-            }
-        } else {
-            if (contractor.send(msg.value)) {
-                return true;
-            } else {
-                throw;
-            }
-        }
-    }
-
-    // pay reward
-    function payReward() returns(bool) {
-        if (promiseValid) {
-            if (client.DAOrewardAccount().call.value(msg.value)()) {
-                return true;
-            } else {
-                throw;
-            }
-        } else {
-            if (contractor.send(msg.value)) {
-                return true;
-            } else {
-                throw;
-            }
-        }
     }
 
     // Fallback function

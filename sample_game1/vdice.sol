@@ -1,6 +1,6 @@
 
 // example:
-// solc DAO=/home/tonykent/DAO DAOSecurity.sol
+// solc DAO=/home/tonykent/DAO vdice.sol
 import "DAO/DaoCasino.sol";
 
 /// @notice Different helpers function go here
@@ -46,7 +46,7 @@ contract Dice {
      address public daoCasinoAddress;
      DAOCasinoInterface daoCasino;
 
-     bool public isStopped;
+     bool public isStopped = true; // until 'proposalIsAccepted' is called
 
      struct Bet {
           address user;
@@ -82,11 +82,6 @@ contract Dice {
 
           daoCasinoAddress = _daoCasinoAddress;
           daoCasino = DAOCasinoInterface(_daoCasinoAddress);
-     }
-
-     function() {
-          // if you just send your money to that contract
-          bet();
      }
 
      function bet() {
@@ -234,5 +229,20 @@ contract Dice {
                bankroll = this.balance;
           }
           return bankroll;
+     }
+
+     // this is called from 'vdice_proposal' contract when proposal is accepted by DaoCasino
+     // it gives us money for JackPot and we can start our game!
+     function proposalIsAccepted(){
+          // TODO: get invested in us by DaoCasino money. Check msg.value
+
+          isStopped = false;
+     }
+
+     function() {
+          // if you just send your money to that contract
+          //bet();
+
+          throw;
      }
 }
