@@ -360,8 +360,8 @@ def edit_dao_source(
     # add test query functions
     contents = str_replace_or_die(
         contents,
-        "contract DAO is DAOInterface, DAOCasino, Token, TokenCreation {",
-        """contract DAO is DAOInterface, DAOCasino, Token, TokenCreation {
+        "contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {",
+        """contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
 
         function splitProposalBalance(uint pid, uint sid) constant returns (uint _balance) {
             Proposal p = proposals[pid];

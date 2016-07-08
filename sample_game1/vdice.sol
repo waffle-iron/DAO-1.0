@@ -26,14 +26,10 @@ library Helpers {
 
 /// @notice Code is by vdice.io originally. This is 50% win contract.
 /// DaoCasino team has improved it a bit
-/// 
-/// Money Flow
-//
-/// If user loses:
+/// Money Flow: If user loses:
 ///  100% user loss -> 1 wei to user + (100% - 1 wei) to profit
 ///  100% profit -> 2% to platform + 98% to game profit
 ///  100% game profit -> 5% to game owner + 95% to game JackPot
-///
 contract Dice {
      uint public pwin = 5000; //probability of winning (10000 = 100%)
      uint public edge = 200; //edge percentage (10000 = 100%)
@@ -176,11 +172,14 @@ contract Dice {
                     profitDiff = int(thisBet.bet) - 1;
                }
 
-               // immediately send reward to platform
-               int platformReward = (profitDiff*int(platformEdge))/10000;
-               address platformRewardAccount = daoCasino.getRewardAddress();
-               safeSend(platformRewardAccount, platformReward);
-               profitDiff -= platformReward;
+               // immediately send reward to platform in case of user loss
+               if(profitDiff>0){
+                    int platformReward = (profitDiff*int(platformEdge))/10000;
+                    address platformRewardAccount = daoCasino.getCasinoRewardAddress();
+
+                    safeSend(platformRewardAccount, uint(platformReward));
+                    profitDiff -= platformReward;
+               }
                
                // send profit to game owner 
                int addOwnerProfit = (profitDiff*int(ownerEdge))/10000;

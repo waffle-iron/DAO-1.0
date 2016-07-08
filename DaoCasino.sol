@@ -16,7 +16,7 @@ along with the DAO.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 contract DAOCasinoInterface {
-    function getRewardAddress() returns (address rewardAddress);
+    function getCasinoRewardAddress() returns (address rewardAddress);
 
 // Rand:
     /// @notice Before calling rand - 
@@ -74,22 +74,5 @@ contract Platform {
     function removeGameFromStore(uint _gameID) returns (bool success);
 }
 
-// TODO: 
-contract DAOCasino is DAOCasinoInterface {
-    function getRandOraclizedPrice() returns (uint priceInWei) {
-        priceInWei = 0;
-        return;
-    }
-
-    function generateRandOraclized() returns (bytes32 randId){
-        randId = 0;
-        return;
-    }
-
-    function setReferrer(address player, address referrer) returns (bool isSet){
-        isSet = false;
-        return;
-    }
-}
 
 

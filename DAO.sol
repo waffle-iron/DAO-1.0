@@ -349,7 +349,7 @@ contract DAOInterface {
 }
 
 // The DAO contract itself
-contract DAO is DAOInterface, DAOCasino, Token, TokenCreation {
+contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
     // Modifier that allows only shareholders to vote and create new proposals
     modifier onlyTokenholders {
         if (balanceOf(msg.sender) == 0) throw;
@@ -891,6 +891,28 @@ contract DAO is DAOInterface, DAOCasino, Token, TokenCreation {
 
     function unblockMe() returns (bool) {
         return isBlocked(msg.sender);
+    }
+
+// TODO: 
+// DAOCasinoInterface
+    function getCasinoRewardAddress() returns (address rewardAddress){
+        rewardAddress = address(DAOrewardAccount);
+        return;
+    }
+
+    function getRandOraclizedPrice() returns (uint priceInWei) {
+        priceInWei = 0;
+        return;
+    }
+
+    function generateRandOraclized() returns (bytes32 randId){
+        randId = 0;
+        return;
+    }
+
+    function setReferrer(address player, address referrer) returns (bool isSet){
+        isSet = false;
+        return;
     }
 }
 
