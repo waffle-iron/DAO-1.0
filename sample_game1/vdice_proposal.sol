@@ -113,6 +113,7 @@ contract SampleProposal {
         uint constant safeGas = 25000;
         if(!vdiceGame.proposalIsAccepted.call.gas(safeGas).value(sendToGame)()){
             // TODO: handle that 
+            throw;
         }
     }
 
