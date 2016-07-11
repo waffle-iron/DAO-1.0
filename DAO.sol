@@ -81,9 +81,6 @@ contract DAOInterface {
 
     // Amount of rewards (in wei) already paid out to a certain address
     mapping (address => uint) public paidOut;
-    // Map of addresses blocked during a vote (not allowed to transfer DAO
-    // tokens). The address points to the proposal ID.
-    mapping (address => uint) public blocked;
 
     // The minimum deposit (in wei) required to submit any proposal that is not
     // requesting a new Curator (no deposit is required for splits)
@@ -333,15 +330,6 @@ contract DAOInterface {
     /// @return Address of the new DAO
     function getNewDAOAddress(uint _proposalID) constant returns (address _newDAO);
 
-    /// @param _account The address of the account which is checked.
-    /// @return Whether the account is blocked (not allowed to transfer tokens) or not.
-    function isBlocked(address _account) internal returns (bool);
-
-    /// @notice If the caller is blocked by a proposal whose voting deadline
-    /// has exprired then unblock him.
-    /// @return Whether the account is blocked (not allowed to transfer tokens) or not.
-    function unblockMe() returns (bool);
-
 // Events:
     event ProposalAdded(
         uint indexed proposalID,
@@ -505,14 +493,6 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
             p.votedNo[msg.sender] = true;
         }
 
-        if (blocked[msg.sender] == 0) {
-            blocked[msg.sender] = _proposalID;
-        } else if (p.votingDeadline > proposals[blocked[msg.sender]].votingDeadline) {
-            // this proposal's voting deadline is further into the future than
-            // the proposal that blocks the sender so make it the blocker
-            blocked[msg.sender] = _proposalID;
-        }
-
         Voted(_proposalID, _supportsProposal, msg.sender);
     }
 
@@ -625,6 +605,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
 
         // Sanity check
 
+        // Did you already vote on another proposal?
         if (now < p.votingDeadline  // has the voting deadline arrived?
             //The request for a split expires XX days after the voting deadline
             || now > p.votingDeadline + splitExecutionPeriod
@@ -633,10 +614,8 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
             // Is it a new curator proposal?
             || !p.newCurator
             // Have you voted for this split?
-            || !p.votedYes[msg.sender]
-            // Did you already vote on another proposal?
-            || (blocked[msg.sender] != _proposalID && blocked[msg.sender] != 0) )  {
-
+            || !p.votedYes[msg.sender])
+        {
             throw;
         }
 
@@ -754,7 +733,6 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
     function transfer(address _to, uint256 _value) returns (bool success) {
         if (isFueled
             && now > closingTime
-            && !isBlocked(msg.sender)
             && transferPaidOut(msg.sender, _to, _value)
             && super.transfer(_to, _value)) {
 
@@ -775,7 +753,6 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (isFueled
             && now > closingTime
-            && !isBlocked(_from)
             && transferPaidOut(_from, _to, _value)
             && super.transferFrom(_from, _to, _value)) {
 
@@ -885,22 +862,6 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
 
     function getNewDAOAddress(uint _proposalID) constant returns (address _newDAO) {
         return proposals[_proposalID].splitData[0].newDAO;
-    }
-
-    function isBlocked(address _account) internal returns (bool) {
-        if (blocked[_account] == 0)
-            return false;
-        Proposal p = proposals[blocked[_account]];
-        if (now > p.votingDeadline) {
-            blocked[_account] = 0;
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    function unblockMe() returns (bool) {
-        return isBlocked(msg.sender);
     }
 
 // TODO: 

@@ -44,6 +44,7 @@ for (i = 0; i < votes.length; i++) {
     );
 }
 checkWork();
+
 addToTest('proposal_yay', parseInt(web3.fromWei(dao.proposals(prop_id)[9])));
 addToTest('proposal_nay', parseInt(web3.fromWei(dao.proposals(prop_id)[10])));
 addToTest('curator_balance_before', web3.fromWei(eth.getBalance(curator)));
@@ -76,4 +77,5 @@ setTimeout(function() {
     testResults();
 }, $debating_period * 1000);
 console.log("Wait for end of debating period");
+
 miner.start(1);
