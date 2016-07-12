@@ -29,6 +29,11 @@ setTimeout(function() {
     miner.stop();
     addToTest('dao_fueled', dao.isFueled());
     addToTest('total_supply', parseFloat(web3.fromWei(dao.totalSupply())));
+
+    addToTest('curators_count', dao.curatorsCount());
+    addToTest('first_curator', dao.curators(0));
+    addToTest('creator_addr', dao.creatorAddress());
+
     var balances = [];
     for (i = 0; i < eth.accounts.length; i++) {
         balances.push(parseFloat(web3.fromWei(dao.balanceOf(eth.accounts[i]))));

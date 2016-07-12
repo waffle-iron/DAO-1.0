@@ -60,5 +60,9 @@ def run(ctx):
         "dao_fueled": True,
         "total_supply": adjusted_supply,
         "balances": adjusted_amounts,
-        "user0_after": adjusted_amounts[0]
+        "user0_after": adjusted_amounts[0],
+
+        "curators_count": 1,
+        "first_curator": ctx.dao_deployer_addr,
+        "creator_addr": ctx.dao_deployer_addr
     })

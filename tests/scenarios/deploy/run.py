@@ -38,6 +38,7 @@ def run(ctx):
         ctx.dao_creator_addr = results['dao_creator_address']
         ctx.dao_addr = results['dao_address']
         ctx.offer_addr = results['offer_address']
+        ctx.dao_deployer_addr = results['dao_deployer_addr']
     except:
         print(
             "ERROR: Could not find expected results in the deploy scenario"

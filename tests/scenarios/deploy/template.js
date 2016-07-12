@@ -16,9 +16,12 @@ var _daoCreatorContract = creatorContract.new(
             console.log(e+" at DAOCreator creation!");
 	} else if (typeof contract.address != 'undefined') {
         addToTest('dao_creator_address', contract.address);
+
+        //addToTest('dao_deployer_address', web3.eth.accounts[0]);
+
         checkWork();
         var dao = daoContract.new(
-	        _curator,
+	        //_curator,
 	        contract.address,
             $default_proposal_deposit,
 	        web3.toWei($min_tokens_to_create, "ether"),
@@ -42,7 +45,7 @@ var _daoCreatorContract = creatorContract.new(
 checkWork();
 var offerContract = web3.eth.contract($offer_abi);
 var offer = offerContract.new(
-    _curator,
+    //_curator,
     '0x0',  // This is a hash of the paper contract. Does not matter for testing
     web3.toWei($offer_total, "ether"), //total costs
     web3.toWei($offer_onetime, "ether"), //one time costs
@@ -58,7 +61,9 @@ var offer = offerContract.new(
             console.log(e + " at Offer Contract creation!");
 	    } else if (typeof contract.address != 'undefined') {
             addToTest('offer_address', contract.address);
-        }
+         }
+
+         addToTest('dao_deployer_addr', web3.eth.accounts[0]);
     }
 );
 checkWork();

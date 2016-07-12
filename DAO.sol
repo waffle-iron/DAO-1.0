@@ -55,8 +55,13 @@ contract DAOInterface {
     // The unix time of the last time quorum was reached on a proposal
     uint  public lastTimeMinQuorumMet;
 
-    // Address of the curator
-    address public curator;
+// Curators:
+    uint constant maxCount = 11;
+    uint public curatorsCount = 0;
+    // TODO: use maxCount!
+    address[11] public curators;
+
+//
     // The whitelist: List of addresses the DAO is allowed to send ether to
     mapping (address => bool) public allowedRecipients;
 
@@ -67,6 +72,9 @@ contract DAOInterface {
     mapping (address => uint) public rewardToken;
     // Total supply of rewardToken
     uint public totalRewardToken;
+
+    // This is who deployed DAO
+    address public creatorAddress; 
 
     // The account used to manage the rewards which are to be distributed to the
     // DAO Token Holders of this DAO
@@ -147,11 +155,14 @@ contract DAOInterface {
 
     // Used to restrict access to certain functions to only DAO Token Holders
     modifier onlyTokenholders {}
+    // Used to restrict access to certain functions to only Curators 
+    modifier onlyCurators{}
+    // Only DAO creator can call these methods
+    modifier onlyCreator{}
 
     /// @dev Constructor setting the Curator and the address
     /// for the contract able to create another DAO as well as the parameters
     /// for the DAO Token Creation
-    /// @param _curator The Curator
     /// @param _daoCreator The contract able to (re)create this DAO
     /// @param _proposalDeposit The deposit to be paid for a regular proposal
     /// @param _minTokensToCreate Minimum required wei-equivalent tokens
@@ -161,7 +172,6 @@ contract DAOInterface {
     /// non-zero address means that the DAO Token Creation is only for the address
     // This is the constructor: it can not be overloaded so it is commented out
     //  function DAO(
-        //  address _curator,
         //  DAO_Creator _daoCreator,
         //  uint _proposalDeposit,
         //  uint _minTokensToCreate,
@@ -232,7 +242,7 @@ contract DAOInterface {
     function vote(
         uint _proposalID,
         bool _supportsProposal
-    ) onlyTokenholders returns (uint _voteID);
+    ) onlyCurators returns (uint _voteID);
 
     /// @notice Checks whether proposal `_proposalID` with transaction data
     /// `_transactionData` has been voted for or rejected, and executes the
@@ -330,6 +340,14 @@ contract DAOInterface {
     /// @return Address of the new DAO
     function getNewDAOAddress(uint _proposalID) constant returns (address _newDAO);
 
+// Curators whitelist
+    /// @notice This can be called only by creator. After DAO is deployed ->
+    /// he should add 11 curators to the list
+    function addCuratorToWhitelist(address curator) onlyCreator returns(bool success);
+
+    // TODO: voting
+    function changeCurator(address a, address b) onlyCreator returns (bool success);
+
 // Events:
     event ProposalAdded(
         uint indexed proposalID,
@@ -352,8 +370,17 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
             _
     }
 
+    modifier onlyCurators{
+        if(!isInWhitelist(msg.sender)) throw;
+            _
+    }
+
+    modifier onlyCreator {
+        if(msg.sender!=creatorAddress) throw;
+            _
+    }
+
     function DAO(
-        address _curator,
         DAO_Creator _daoCreator,
         uint _proposalDeposit,
         uint _minTokensToCreate,
@@ -362,7 +389,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
         address _teamRewardAccount      // added by DaoCasino
     ) TokenCreation(_minTokensToCreate, _closingTime, _privateCreation, _teamRewardAccount) {
 
-        curator = _curator;
+        creatorAddress = msg.sender;
         daoCreator = _daoCreator;
         proposalDeposit = _proposalDeposit;
 
@@ -378,7 +405,11 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
         proposals.length = 1; // avoids a proposal with ID 0 because it is used
 
         allowedRecipients[address(this)] = true;
-        allowedRecipients[curator] = true;
+
+        // TODO: call function?
+        // Add creator of the DAO as first curator
+        curators[curatorsCount] = creatorAddress;
+        curatorsCount++;
     }
 
     function () returns (bool success) {
@@ -406,7 +437,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
         if (_newCurator && (
             _amount != 0
             || _transactionData.length != 0
-            || _recipient == curator
+            || isInWhitelist(_recipient)
             || msg.value > 0
             /*|| _debatingPeriod < minSplitDebatePeriod*/)) {
             throw;
@@ -475,7 +506,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
     function vote(
         uint _proposalID,
         bool _supportsProposal
-    ) onlyTokenholders noEther returns (uint _voteID) {
+    ) onlyCurators noEther returns (uint _voteID) {
 
         Proposal p = proposals[_proposalID];
         if (p.votedYes[msg.sender]
@@ -495,7 +526,6 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
 
         Voted(_proposalID, _supportsProposal, msg.sender);
     }
-
 
     function executeProposal(
         uint _proposalID,
@@ -573,8 +603,9 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
             if (p.recipient != address(this) && p.recipient != address(rewardAccount)
                 && p.recipient != address(DAOrewardAccount)
                 && p.recipient != address(extraBalance)
-                && p.recipient != address(curator)) {
-
+                && !isInWhitelist(p.recipient) 
+               ) 
+            {
                 // issue more reward tokens
                 rewardToken[address(this)] += p.amount;
                 totalRewardToken += p.amount;
@@ -800,9 +831,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
     }
 
 
-    function changeAllowedRecipients(address _recipient, bool _allowed) noEther external returns (bool _success) {
-        if (msg.sender != curator)
-            throw;
+    function changeAllowedRecipients(address _recipient, bool _allowed) onlyCurators noEther external returns (bool _success) {
         allowedRecipients[_recipient] = _allowed;
         AllowedRecipientChanged(_recipient, _allowed);
         return true;
@@ -835,7 +864,8 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
     function halveMinQuorum() returns (bool _success) {
         // this can only be called after `quorumHalvingPeriod` has passed or at anytime
         // by the curator with a delay of at least `minProposalDebatePeriod` between the calls
-        if ((lastTimeMinQuorumMet < (now - quorumHalvingPeriod) || msg.sender == curator)
+
+        if ((lastTimeMinQuorumMet < (now - quorumHalvingPeriod) || isInWhitelist(msg.sender))
             && lastTimeMinQuorumMet < (now - minProposalDebatePeriod)) {
             lastTimeMinQuorumMet = now;
             minQuorumDivisor *= 2;
@@ -864,6 +894,51 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
         return proposals[_proposalID].splitData[0].newDAO;
     }
 
+// Curators:
+    function addCuratorToWhitelist(address curator) onlyCreator returns(bool success){
+        // no more than 
+        if(curatorsCount>=maxCount){
+            success = false;
+            return;
+        }
+
+        curators[curatorsCount] = curator;
+        curatorsCount++;
+
+        success = true; 
+        return;
+    }
+
+    function isFull()returns(bool isFull){
+        isFull = (curatorsCount>=maxCount);
+        return;
+    }
+
+    function isInWhitelist(address a)returns(bool isInList){
+        for(uint i=0; i<curatorsCount; ++i){
+            if(curators[i]==a){
+                isInList = true;
+                return;
+            }        
+        }
+        isInList = false; 
+        return;
+    }
+
+    function changeCurator(address a, address b) onlyCreator returns(bool success){
+        for(uint i=0; i<curatorsCount; ++i){
+            // found it
+            if(curators[i]==a){
+                curators[i] = b;
+                success = true;
+                return;
+            }        
+        }
+
+        success = false;
+        return;
+    }
+
 // TODO: 
 // DAOCasinoInterface
     function getCasinoRewardAddress() returns (address rewardAddress){
@@ -889,7 +964,6 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
 
 contract DAO_Creator {
     function createDAO(
-        address _curator,
         uint _proposalDeposit,
         uint _minTokensToCreate,
         uint _closingTime,
@@ -897,7 +971,6 @@ contract DAO_Creator {
     ) returns (DAO _newDAO) {
 
         return new DAO(
-            _curator,
             DAO_Creator(this),
             _proposalDeposit,
             _minTokensToCreate,
