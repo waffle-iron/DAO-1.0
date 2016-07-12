@@ -23,6 +23,7 @@ for (i = 0; i < eth.accounts.length; i++) {
     );
 }
 checkWork();
+
 setTimeout(function() {
     miner.stop();
     attempt_execute_proposal(
@@ -35,6 +36,9 @@ setTimeout(function() {
     );
 
     addToTest('deposit_after_vote', parseInt(dao.proposalDeposit()));
+    addToTest('proposal_yay', parseInt(web3.fromWei(dao.proposals(prop_id)[9])));
+    addToTest('proposal_nay', parseInt(web3.fromWei(dao.proposals(prop_id)[10])));
+
     testResults();
 }, $debating_period * 1000);
 miner.start(1);

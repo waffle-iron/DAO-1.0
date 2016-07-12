@@ -7,7 +7,7 @@ scenario_description = (
 
 
 def run(ctx):
-    ctx.assert_scenario_ran('fuel')
+    ctx.assert_scenario_ran('curators')
 
     bytecode = calculate_bytecode(
         'changeProposalDeposit',
@@ -27,5 +27,7 @@ def run(ctx):
     )
 
     ctx.execute(expected={
-        "deposit_after_vote": ctx.args.deposit_new_value
+        "deposit_after_vote": ctx.args.deposit_new_value,
+        "proposal_yay": 54,
+        "proposal_nay": 0
     })

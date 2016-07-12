@@ -30,10 +30,12 @@ addToTest(
 );
 addToTest('dao_proposals_number', dao.numberOfProposals());
 
+// Vote:
 var votes = $votes;
 console.log("Deadline is: " + dao.proposals(prop_id)[3] + " Voting ... ");
 for (i = 0; i < votes.length; i++) {
     console.log("User " + i +" is voting ["+ votes[i] +"]. His token balance is: " + web3.fromWei(dao.balanceOf(eth.accounts[i])) + " ether and NOW is: " + Math.floor(Date.now() / 1000));
+
     dao.vote.sendTransaction(
         prop_id,
         votes[i],

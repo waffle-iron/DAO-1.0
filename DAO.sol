@@ -133,9 +133,9 @@ contract DAOInterface {
         uint yea;
         // Number of Tokens opposed to the proposal
         uint nay;
-        // Simple mapping to check if a shareholder has voted for it
+        // Simple mapping to check if a curator has voted for it
         mapping (address => bool) votedYes;
-        // Simple mapping to check if a shareholder has voted against it
+        // Simple mapping to check if a curator has voted against it
         mapping (address => bool) votedNo;
         // Address of the shareholder who created the proposal
         address creator;
@@ -371,8 +371,8 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
     }
 
     modifier onlyCurators{
-        if(!isInWhitelist(msg.sender)) throw;
-            _
+        //if(!isInWhitelist(msg.sender)) throw;
+        //    _
     }
 
     modifier onlyCreator {
