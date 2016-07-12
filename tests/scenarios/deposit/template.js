@@ -11,8 +11,8 @@ var prop_id = attempt_proposal(
     false // whether it's a split proposal or not
 );
 
-// in this scenario all users vote for the change
-for (i = 0; i < eth.accounts.length; i++) {
+// in this scenario ONLY CURATORS vote for the change
+for (i = 0; i < 3; i++) {
     dao.vote.sendTransaction(
         prop_id,
         true,
@@ -24,8 +24,21 @@ for (i = 0; i < eth.accounts.length; i++) {
 }
 checkWork();
 
+// send transaction from someone else (not a curator)
+// must fail
+dao.vote.sendTransaction(
+   prop_id,
+   true,
+   {
+       from: eth.accounts[4],
+       gas: 1000000
+   }
+);
+checkWork();
+
 setTimeout(function() {
     miner.stop();
+
     attempt_execute_proposal(
         dao, // target DAO
         prop_id, // proposal ID
@@ -34,8 +47,8 @@ setTimeout(function() {
         true, // should the proposal be closed after this call?
         true // should the proposal pass?
     );
-
     addToTest('deposit_after_vote', parseInt(dao.proposalDeposit()));
+
     addToTest('proposal_yay', parseInt(web3.fromWei(dao.proposals(prop_id)[9])));
     addToTest('proposal_nay', parseInt(web3.fromWei(dao.proposals(prop_id)[10])));
 

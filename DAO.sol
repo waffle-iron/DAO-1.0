@@ -38,8 +38,6 @@ contract DAOInterface {
     // Period of days inside which it's possible to execute a DAO split
     //uint constant splitExecutionPeriod = 27 days;
 
-    // Period of time after which the minimum Quorum is halved
-    uint constant quorumHalvingPeriod = 25 weeks;
     // Period after which a proposal is closed
     // (used in the case `executeProposal` fails because it throws)
     uint constant executeProposalPeriod = 10 days;
@@ -49,16 +47,11 @@ contract DAOInterface {
 
     // Proposals to spend the DAO's ether or to choose a new Curator
     Proposal[] public proposals;
-    // The quorum needed for each proposal is partially calculated by
-    // totalSupply / minQuorumDivisor
-    uint public minQuorumDivisor;
-    // The unix time of the last time quorum was reached on a proposal
-    uint  public lastTimeMinQuorumMet;
 
 // Curators:
-    uint constant maxCount = 11;
+    uint constant maxCuratorsCount = 11;
     uint public curatorsCount = 0;
-    // TODO: use maxCount!
+    // TODO: use maxCuratorsCount!
     address[11] public curators;
 
 //
@@ -253,7 +246,7 @@ contract DAOInterface {
     function executeProposal(
         uint _proposalID,
         bytes _transactionData
-    ) returns (bool _success);
+    ) onlyCurators returns (bool _success);
 
     /// @notice ATTENTION! I confirm to move my remaining ether to a new DAO
     /// with `_newCurator` as the new Curator, as has been
@@ -328,11 +321,6 @@ contract DAOInterface {
         uint256 _amount
     ) returns (bool success);
 
-    /// @notice Doubles the 'minQuorumDivisor' in the case quorum has not been
-    /// achieved in 52 weeks
-    /// @return Whether the change was successful or not
-    function halveMinQuorum() returns (bool _success);
-
     /// @return total number of proposals ever created
     function numberOfProposals() constant returns (uint _numberOfProposals);
 
@@ -371,13 +359,13 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
     }
 
     modifier onlyCurators{
-        //if(!isInWhitelist(msg.sender)) throw;
-        //    _
+        if(!isInWhitelist(msg.sender)) throw;
+        _
     }
 
     modifier onlyCreator {
         if(msg.sender!=creatorAddress) throw;
-            _
+        _
     }
 
     function DAO(
@@ -400,8 +388,6 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
             throw;
         if (address(DAOrewardAccount) == 0)
             throw;
-        lastTimeMinQuorumMet = now;
-        minQuorumDivisor = 5; // sets the minimal quorum to 20%
         proposals.length = 1; // avoids a proposal with ID 0 because it is used
 
         allowedRecipients[address(this)] = true;
@@ -517,10 +503,10 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
         }
 
         if (_supportsProposal) {
-            p.yea += balances[msg.sender];
+            p.yea++;
             p.votedYes[msg.sender] = true;
         } else {
-            p.nay += balances[msg.sender];
+            p.nay++;
             p.votedNo[msg.sender] = true;
         }
 
@@ -530,7 +516,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
     function executeProposal(
         uint _proposalID,
         bytes _transactionData
-    ) noEther returns (bool _success) {
+    ) onlyCurators noEther returns (bool _success) {
 
         Proposal p = proposals[_proposalID];
 
@@ -583,11 +569,6 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
         if (quorum >= minQuorum(p.amount)) {
             if (!p.creator.send(p.proposalDeposit))
                 throw;
-
-            lastTimeMinQuorumMet = now;
-            // set the minQuorum to 20% again, in the case it has been reached
-            if (quorum > totalSupply / 5)
-                minQuorumDivisor = 5;
         }
 
         // Execute result
@@ -855,35 +836,8 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
 
 
     function minQuorum(uint _value) internal constant returns (uint _minQuorum) {
-        // minimum of 20% and maximum of 53.33%
-        return totalSupply / minQuorumDivisor +
-            (_value * totalSupply) / (3 * (actualBalance() + rewardToken[address(this)]));
+        return curatorsCount;  // require all curators to vote!
     }
-
-
-    function halveMinQuorum() returns (bool _success) {
-        // this can only be called after `quorumHalvingPeriod` has passed or at anytime
-        // by the curator with a delay of at least `minProposalDebatePeriod` between the calls
-
-        if ((lastTimeMinQuorumMet < (now - quorumHalvingPeriod) || isInWhitelist(msg.sender))
-            && lastTimeMinQuorumMet < (now - minProposalDebatePeriod)) {
-            lastTimeMinQuorumMet = now;
-            minQuorumDivisor *= 2;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /*
-    function createNewDAO(address _newCurator) internal returns (DAO _newDAO) {
-        NewCurator(_newCurator);
-
-        // will deny anyone from getting extra team reward tokens...
-        address teamAddress = 0;
-        return daoCreator.createDAO(_newCurator, 0, 0, now + splitExecutionPeriod, teamAddress);
-    }
-    */
 
     function numberOfProposals() constant returns (uint _numberOfProposals) {
         // Don't count index 0. It's used by isBlocked() and exists from start
@@ -897,7 +851,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
 // Curators:
     function addCuratorToWhitelist(address curator) onlyCreator returns(bool success){
         // no more than 
-        if(curatorsCount>=maxCount){
+        if(curatorsCount>=maxCuratorsCount){
             success = false;
             return;
         }
@@ -910,7 +864,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
     }
 
     function isFull()returns(bool isFull){
-        isFull = (curatorsCount>=maxCount);
+        isFull = (curatorsCount>=maxCuratorsCount);
         return;
     }
 
