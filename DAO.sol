@@ -135,6 +135,9 @@ contract DAOInterface {
         mapping (address => bool) votedNo;
         // Address of the shareholder who created the proposal
         address creator;
+
+        mapping (address => bool) votedToBlock;
+        uint votedToBlockCount;
     }
 
     // Used only in the case of a newCurator proposal.
@@ -237,6 +240,13 @@ contract DAOInterface {
         bool _supportsProposal
     ) onlyCurators returns (uint _voteID);
 
+    /// @notice Vote on blocking `_proposalID` 
+    /// @param _proposalID The proposal ID
+    /// @return The vote ID.
+    function blockProposal(
+        uint _proposalID
+    ) onlyTokenholders returns (uint _voteID);
+
     /// @notice Checks whether proposal `_proposalID` with transaction data
     /// `_transactionData` has been voted for or rejected, and executes the
     /// transaction in the case it has been voted for.
@@ -326,7 +336,11 @@ contract DAOInterface {
         string description
     );
     event Voted(uint indexed proposalID, bool position, address indexed voter);
+    event VotedToBlock(uint indexed proposalID, address indexed voter);
+
     event ProposalTallied(uint indexed proposalID, bool result, uint quorum);
+    event ProposalClosedOnBlock(uint indexed proposalID, address indexed _call);
+
     event NewCurator(address indexed _newCurator);
     event AllowedRecipientChanged(address indexed _recipient, bool _allowed);
 }
@@ -479,6 +493,23 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
         Voted(_proposalID, _supportsProposal, msg.sender);
     }
 
+    function blockProposal(
+        uint _proposalID
+    ) onlyTokenholders noEther returns (uint _voteID) {
+
+        Proposal p = proposals[_proposalID];
+        if (p.votedYes[msg.sender]
+            || p.votedNo[msg.sender]
+            || now >= p.votingDeadline) {
+            throw;
+        }
+
+        p.votedToBlock[msg.sender] = true;
+        p.votedToBlockCount++;
+
+        VotedToBlock(_proposalID, msg.sender);
+    }
+
     function executeProposal(
         uint _proposalID,
         bytes _transactionData
@@ -528,9 +559,16 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
                 proposalCheck = false;
         }
 
+        // Give back money to proposal creator 
         if (quorum >= minQuorum(p.amount)) {
             if (!p.creator.send(p.proposalDeposit))
                 throw;
+        }
+
+        if (isProposalBlocked(_proposalID)) {
+            closeProposal(_proposalID);
+            ProposalClosedOnBlock(_proposalID, msg.sender);
+            throw;
         }
 
         // Execute result
@@ -566,6 +604,19 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
         if (p.open)
             sumOfProposalDeposits -= p.proposalDeposit;
         p.open = false;
+    }
+
+    function isProposalBlocked(uint _proposalID) internal returns(bool isBlocked){
+        Proposal p = proposals[_proposalID];
+
+        // TODO: move 2 to parameters
+        if(p.votedToBlockCount >= (totalSupply/2)){
+            isBlocked = true;
+            return;
+        }
+
+        isBlocked = false; 
+        return;
     }
 
     function newContract(address _newContract){

@@ -27,7 +27,6 @@ def run(ctx):
     )
 
     ctx.execute(expected={
-        # TODO: uncomment
         #"deposit_after_vote": ctx.args.deposit_new_value,
 
         "proposal_yay": 3,    # all curators voted 'Yes'
