@@ -93,7 +93,7 @@ contract DAOInterface {
     // Contract that is able to create a new DAO (with the same code as
     // this one), used for splits
     DAO_Creator public daoCreator;
-
+     
     // A proposal represents a transaction
     // to be issued by this DAO
     struct Proposal {
@@ -133,13 +133,15 @@ contract DAOInterface {
         mapping (address => bool) votedYes;
         // Simple mapping to check if a curator has voted against it
         mapping (address => bool) votedNo;
-        // Address of the shareholder who created the proposal
-        address creator;
+
+        uint votedToBlockCount;
 
         mapping (address => bool) votedToBlock;
-        uint votedToBlockCount;
-    }
 
+        // Address of the shareholder who created the proposal
+        address creator;
+    }
+ 
     // Used only in the case of a newCurator proposal.
     struct SplitData {
         // The balance of the current DAO minus the deposit at the time of split
@@ -215,6 +217,10 @@ contract DAOInterface {
         bytes _transactionData,
         uint _debatingPeriod
     ) onlyTokenholders returns (uint _proposalID);
+
+    /// @notice Check if tokenholders have blocked the proposal (even if curators voted yes)
+    function isProposalBlocked(
+        uint _proposalID) returns(bool _isBlocked);
 
     /// @notice Check that the proposal with the ID `_proposalID` matches the
     /// transaction which sends `_amount` with data `_transactionData`
@@ -485,6 +491,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
         if (_supportsProposal) {
             p.yea++;
             p.votedYes[msg.sender] = true;
+        
         } else {
             p.nay++;
             p.votedNo[msg.sender] = true;
@@ -506,6 +513,8 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
 
         p.votedToBlock[msg.sender] = true;
         p.votedToBlockCount++;
+
+        //votedToBlockCount++;
 
         VotedToBlock(_proposalID, msg.sender);
     }
@@ -606,16 +615,16 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
         p.open = false;
     }
 
-    function isProposalBlocked(uint _proposalID) internal returns(bool isBlocked){
+    function isProposalBlocked(uint _proposalID) returns(bool _isBlocked){
         Proposal p = proposals[_proposalID];
 
         // TODO: move 2 to parameters
         if(p.votedToBlockCount >= (totalSupply/2)){
-            isBlocked = true;
+            _isBlocked = true;
             return;
         }
 
-        isBlocked = false; 
+        _isBlocked = false; 
         return;
     }
 
