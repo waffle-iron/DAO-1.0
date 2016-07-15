@@ -12,7 +12,7 @@ var prop_id = attempt_proposal(
 );
 
 // in this scenario ONLY CURATORS vote for the change
-for (i = 0; i < 3; i++) {
+for (i = 0; i < 2; i++) {
     dao.vote.sendTransaction(
         prop_id,
         true,
@@ -25,7 +25,7 @@ for (i = 0; i < 3; i++) {
 
 checkWork();
 
-for (i = 3; i < 5; i++) {
+for (i = 2; i < 5; i++) {
      dao.blockProposal.sendTransaction(
         prop_id,
         {
