@@ -31,14 +31,8 @@ def run(ctx):
         if ctx.scenario_uses_extrabalance() else ctx.token_amounts
     )
 
-    adjusted_supply = (
-        (ctx.total_supply / 1.5)
-        if ctx.scenario_uses_extrabalance() else ctx.total_supply
-    )
-
     blocking_tokens_count = adjusted_amounts[3] + adjusted_amounts[4];
     print("Blocking count must be: {}".format(blocking_tokens_count))
-    print("Total supply is: {}".format(adjusted_supply))
 
     ctx.execute(expected={
         "dao_total_supply": ctx.total_supply,
