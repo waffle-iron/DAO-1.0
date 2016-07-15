@@ -512,9 +512,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
         }
 
         p.votedToBlock[msg.sender] = true;
-        p.votedToBlockCount++;
-
-        //votedToBlockCount++;
+        p.votedToBlockCount+=balances[msg.sender];
 
         VotedToBlock(_proposalID, msg.sender);
     }
@@ -616,6 +614,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
     }
 
     function isProposalBlocked(uint _proposalID) returns(bool _isBlocked){
+        // TODO: remove
         Proposal p = proposals[_proposalID];
 
         _isBlocked = true; 

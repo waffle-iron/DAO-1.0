@@ -26,13 +26,21 @@ def run(ctx):
         "as much".format(ctx.args.proposal_debate_seconds)
     )
 
+    adjusted_amounts = (
+        [x/1.5 for x in ctx.token_amounts]
+        if ctx.scenario_uses_extrabalance() else ctx.token_amounts
+    )
+
+    blocking_tokens_count = adjusted_amounts[3] + adjusted_amounts[4];
+    print("Blocking count must be: {}".format(blocking_tokens_count))
+
     ctx.execute(expected={
         "dao_total_supply": ctx.total_supply,
 
         "proposal_yay": 3,    # all curators voted 'Yes'
         "proposal_nay": 0,
 
-        "blocking_count": 2,
+        "blocking_count": blocking_tokens_count,
 
         # Deposit should not be changed because proposal didn't pass
         #"deposit_after_vote": ctx.args.deposit_new_value,

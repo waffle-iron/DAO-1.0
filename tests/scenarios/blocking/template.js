@@ -25,7 +25,7 @@ for (i = 0; i < 3; i++) {
 
 checkWork();
 
-for (i = 0; i < 5; i++) {
+for (i = 3; i < 5; i++) {
      dao.blockProposal.sendTransaction(
         prop_id,
         {
