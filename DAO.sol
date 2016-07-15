@@ -32,12 +32,6 @@ contract DAOInterface {
     uint constant creationGracePeriod = 40 days;
     // The minimum debate period that a generic proposal can have
     uint constant minProposalDebatePeriod = 2 weeks;
-
-    // The minimum debate period that a split proposal can have
-    //uint constant minSplitDebatePeriod = 1 weeks;
-    // Period of days inside which it's possible to execute a DAO split
-    //uint constant splitExecutionPeriod = 27 days;
-
     // Period after which a proposal is closed
     // (used in the case `executeProposal` fails because it throws)
     uint constant executeProposalPeriod = 10 days;
@@ -393,7 +387,6 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
 
         allowedRecipients[address(this)] = true;
 
-        // TODO: call function?
         // Add creator of the DAO as first curator
         curators[curatorsCount] = creatorAddress;
         curatorsCount++;
@@ -808,7 +801,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
         return;
     }
 
-    function isFull()returns(bool isFull){
+    function isCuratorsFull()returns(bool isFull){
         isFull = (curatorsCount>=maxCuratorsCount);
         return;
     }
