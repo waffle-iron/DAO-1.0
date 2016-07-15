@@ -40,6 +40,7 @@ def run(ctx):
         "offer_amount": amount,
         "offer_desc": 'Test Proposal',
         "proposal_deposit": ctx.args.proposal_deposit,
+                                               # sign hash
         "transaction_bytecode": '0x2ca15122',  # solc --hashes SampleOffer.sol
         "debating_period": ctx.args.proposal_debate_seconds,
         "votes": arr_str(votes),
@@ -52,8 +53,13 @@ def run(ctx):
 
     ctx.execute(expected={
         "dao_proposals_number": "1",
-        "proposal_yay": yay,
-        "proposal_nay": nay,
+        #"proposal_yay": yay,
+        #"proposal_nay": nay,
+
+        # Curator votes:
+        "proposal_yay": 3,
+        "proposal_nay": 0,
+
         "calculated_deposit": ctx.args.proposal_deposit,
 
         # TODO: Unfortunately this makes 'proposal', 'newcontract', 'split' etc tests
