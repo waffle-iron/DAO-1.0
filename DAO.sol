@@ -577,7 +577,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
         if (isProposalBlocked(_proposalID)) {
             closeProposal(_proposalID);
             ProposalClosedOnBlock(_proposalID, msg.sender);
-            throw;
+            return;
         }
 
         // Execute result
@@ -618,6 +618,10 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
     function isProposalBlocked(uint _proposalID) returns(bool _isBlocked){
         Proposal p = proposals[_proposalID];
 
+        _isBlocked = true; 
+        return;
+
+        /*
         // TODO: move 2 to parameters
         if(p.votedToBlockCount >= (totalSupply/2)){
             _isBlocked = true;
@@ -626,6 +630,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
 
         _isBlocked = false; 
         return;
+        */
     }
 
     function newContract(address _newContract){

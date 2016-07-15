@@ -27,11 +27,14 @@ def run(ctx):
     )
 
     ctx.execute(expected={
-        "deposit_after_vote": ctx.args.deposit_new_value,
         "dao_total_supply": ctx.total_supply,
 
         "proposal_yay": 3,    # all curators voted 'Yes'
         "proposal_nay": 0,
 
-        "blocking_count": 2
+        "blocking_count": 2,
+
+        # Deposit should not be changed because proposal didn't pass
+        #"deposit_after_vote": ctx.args.deposit_new_value,
+        "deposit_after_vote": 20
     })

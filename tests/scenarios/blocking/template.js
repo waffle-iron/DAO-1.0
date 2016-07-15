@@ -45,7 +45,7 @@ setTimeout(function() {
         '$transaction_bytecode', // transaction bytecode
         curator, // proposal creator
         true, // should the proposal be closed after this call?
-        true // should the proposal pass?
+        false // should the proposal pass?
     );
     addToTest('deposit_after_vote', parseInt(dao.proposalDeposit()));
     addToTest('dao_total_supply', parseInt(web3.fromWei(dao.totalSupply()).ceil()));
