@@ -5,18 +5,36 @@ var dao = web3.eth.contract($dao_abi).at('$dao_address');
 setTimeout(function() {
     miner.stop();
 
-    // 1 - add 2 new curators
-    for(var i=1; i<=2; ++i){
-         dao.addCuratorToWhitelist.sendTransaction(
-             eth.accounts[i],
-              {
-                  from:eth.accounts[0],
-                  to: dao.address,
-                  gas:200000,
-                  value:web3.toWei(20, "ether")
-              }
-         );
-    }
+    dao.addCuratorToWhitelist.sendTransaction(
+        eth.accounts[1],
+         {
+             from:eth.accounts[0],
+             to: dao.address,
+             gas:200000,
+             value:web3.toWei(20, "ether")
+         }
+    );
+
+    dao.addCuratorToWhitelist.sendTransaction(
+        eth.accounts[3],
+         {
+             from:eth.accounts[0],
+             to: dao.address,
+             gas:200000,
+             value:web3.toWei(20, "ether")
+         }
+    );
+
+    dao.changeCurator.sendTransaction(
+        eth.accounts[3],
+        eth.accounts[2],
+         {
+             from:eth.accounts[0],
+             to: dao.address,
+             gas:200000,
+             value:web3.toWei(20, "ether")
+         }
+    );
 
     checkWork();
 
