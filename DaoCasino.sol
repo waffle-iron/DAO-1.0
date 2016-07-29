@@ -42,8 +42,7 @@ contract DAOCasinoInterface {
     function setReferrer(address player, address referrer) returns (bool isSet);
 }
 
-// TODO: 
-contract Platform {
+contract PlatformInterface {
     struct Game {
         uint proposalID;      // see proposals array
         string name;

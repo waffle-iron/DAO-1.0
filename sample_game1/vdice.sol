@@ -38,7 +38,7 @@ contract Dice {
      uint public edge = 200; //edge percentage (10000 = 100%)
      uint public maxWin = 100; //max win (before edge is taken) as percentage of bankroll (10000 = 100%)
      uint public minBet = 1 finney;
-     uint public platformEdge = 200; // edge percentage (10000 = 100%)
+     uint public daoEdge = 200; // edge percentage (10000 = 100%)
      uint public ownerEdge = 50; //edge percentage (10000 = 100%)
      uint constant safeGas = 25000;
 
@@ -170,12 +170,12 @@ contract Dice {
                     profitDiff = int(thisBet.bet) - 1;
                }
 
-               // immediately send reward to platform in case of user loss
+               // immediately send reward to DAO in case of user loss
                if(profitDiff>0){
-                    int platformReward = (profitDiff*int(platformEdge))/10000;
-                    address platformRewardAccount = daoCasino.getCasinoRewardAddress();
+                    int daoReward = (profitDiff*int(daoEdge))/10000;
+                    address daoRewardAccount = daoCasino.getCasinoRewardAddress();
 
-                    safeSend(platformRewardAccount, uint(platformReward));
+                    safeSend(daoRewardAccount, uint(daoReward));
                     profitDiff -= platformReward;
                }
                

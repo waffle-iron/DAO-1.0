@@ -1,3 +1,10 @@
 1) Uncomment reward team
 2) Split contract
-3) Block proposal voting
+3) test: Block proposal voting
+
+4) Platform: addGameToStore, removeGameFromStore
+5) Referrers
+
+6) Distribute sent money: 
+     address daoRewardAccount = daoCasino.getCasinoRewardAddress();
+     safeSend(daoRewardAccount, uint(daoReward));

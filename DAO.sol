@@ -278,7 +278,9 @@ contract DAOInterface {
     /// @return Whether successful or not
     function changeAllowedRecipients(address _recipient, bool _allowed) external returns (bool _success);
 
-
+    /// Please do not remove this method
+    /// It is needed for tests
+    /// 
     /// @notice Change the minimum deposit required to submit a proposal
     /// @param _proposalDeposit The new proposal deposit
     /// @dev Can only be called by this DAO (through proposals with the
@@ -671,7 +673,6 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
         return withdrawRewardFor(msg.sender);
     }
 
-
     function withdrawRewardFor(address _account) noEther internal returns (bool _success) {
         if ((balanceOf(_account) * rewardAccount.accumulatedInput()) / totalSupply < paidOut[_account])
             throw;
@@ -703,7 +704,6 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
             throw;
         return transfer(_to, _value);
     }
-
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (isFueled
