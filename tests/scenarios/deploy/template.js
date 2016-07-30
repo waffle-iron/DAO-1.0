@@ -43,6 +43,7 @@ var _daoCreatorContract = creatorContract.new(
 	}
     });
 checkWork();
+
 var offerContract = web3.eth.contract($offer_abi);
 var offer = offerContract.new(
     //_curator,
@@ -67,6 +68,33 @@ var offer = offerContract.new(
     }
 );
 checkWork();
+
+/*
+var offerContract2 = web3.eth.contract($offer2_abi);
+var offer2 = offerContract2.new(
+    //_curator,
+    '0x0',  // This is a hash of the paper contract. Does not matter for testing
+    web3.toWei($offer_total, "ether"), //total costs
+    web3.toWei($offer_onetime, "ether"), //one time costs
+    web3.toWei(1, "ether"), //min daily costs
+    web3.toWei(1, "ether"), //reward divison
+    web3.toWei(1, "ether"), //deployment rewards
+    {
+	    from: web3.eth.accounts[0],
+	    data: '$offer2_bin',
+	    gas: 3000000
+    }, function (e, contract) {
+	    if (e) {
+            console.log(e + " at Offer Contract creation!");
+	    } else if (typeof contract.address != 'undefined') {
+            addToTest('offer2_address', contract.addr);
+         }
+    }
+);
+checkWork();
+*/
+
+
 console.log("mining contract, please wait");
 miner.start(1);
 setTimeout(function() {

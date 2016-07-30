@@ -33,6 +33,8 @@ class TestContext():
         self.save_file = os.path.join(datadir, "saved")
         self.templates_dir = os.path.join(self.tests_dir, 'templates')
         self.contracts_dir = os.path.dirname(self.tests_dir)
+        self.vdice_dir = self.contracts_dir
+
         self.solc = determine_binary(args.solc, 'solc')
         self.geth = determine_binary(args.geth, 'geth')
 
@@ -171,6 +173,12 @@ class TestContext():
         res = self.compile_contract(offer)
         self.offer_abi = res["contracts"]["SampleOffer"]["abi"]
         self.offer_bin = res["contracts"]["SampleOffer"]["bin"]
+
+        # Compile vdice_proposal.sol
+        vdice_offer = os.path.join(self.vdice_dir, "vdice_proposal.sol")
+        res2 = self.compile_contract(vdice_offer)
+        self.offer2_abi = res2["contracts"]["SampleProposal"]["abi"]
+        self.offer2_bin = res2["contracts"]["SampleProposal"]["bin"]
 
         # also delete the temporary created files
         rm_file(os.path.join(self.contracts_dir, "DAOcopy.sol"))

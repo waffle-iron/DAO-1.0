@@ -63,6 +63,7 @@ contract DAOInterface {
     // represent the proportion of the rewards that the DAO has the right to
     // receive. These Reward Tokens are generated when the DAO spends ether.
     mapping (address => uint) public rewardToken;
+
     // Total supply of rewardToken
     uint public totalRewardToken;
 
@@ -278,9 +279,7 @@ contract DAOInterface {
     /// @return Whether successful or not
     function changeAllowedRecipients(address _recipient, bool _allowed) external returns (bool _success);
 
-    /// Please do not remove this method
-    /// It is needed for tests
-    /// 
+
     /// @notice Change the minimum deposit required to submit a proposal
     /// @param _proposalDeposit The new proposal deposit
     /// @dev Can only be called by this DAO (through proposals with the
@@ -597,6 +596,21 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
                ) 
             {
                 // issue more reward tokens
+                // Every time that a proposal is executed and some money gets out of 
+                // the DAO reward tokens are generated in that DAO. These reward tokens 
+                // represent the amount of the investment made by the DAO.
+                // 
+                // For each Wei that gets out of the DAO, 1RT is generated. The RT are 
+                // owned by the entire DAO.
+                // 
+                // For example if a DAO invest 140Ξ in a proposal, the DAO will generate
+                // and hold 140*10^18RT. If Alice owns 10% of the DAO tokens, we can say
+                // that Alice owns 14 * 10^18 RT implicitly. As the DAO Tokens are backed 
+                // by RT and Ξ that are held by the DAO.
+                // 
+                // What’s important to understand here is that the DAO never just spends money, 
+                // it only supports projects. The ownership of all the returns the projects
+                // provide is determined by the reward tokens it holds.
                 rewardToken[address(this)] += p.amount;
                 totalRewardToken += p.amount;
             }
@@ -673,6 +687,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
         return withdrawRewardFor(msg.sender);
     }
 
+
     function withdrawRewardFor(address _account) noEther internal returns (bool _success) {
         if ((balanceOf(_account) * rewardAccount.accumulatedInput()) / totalSupply < paidOut[_account])
             throw;
@@ -704,6 +719,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
             throw;
         return transfer(_to, _value);
     }
+
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (isFueled
@@ -839,23 +855,54 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
     }
 
 // TODO: 
-// DAOCasinoInterface
-    function getCasinoRewardAddress() returns (address rewardAddress){
-        rewardAddress = address(DAOrewardAccount);
+// PlatformInterface
+    function addGameToStore(
+        address platformAddress,
+        address proposalAddress) returns (uint gameID)
+    {
+        // TODO:
+        gameID = 123;
         return;
     }
 
+    function removeGameFromStore(uint gameID) returns (bool success){
+        // TODO:
+        success = false;
+        return;
+    }
+
+// DAOCasinoInterface
+    function receiveGameReward(address playerAddress) {
+        // 1 - TODO: find referrer and send money to him
+        //address ref = referrers[playerAddress];
+
+        // 2 - TODO: find platoform and send money to it 
+        //address platform = ...;
+
+        // 3 - TODO: keep money in DAO
+        var daoRewardAmount = 0; 
+        if (!DAOrewardAccount.call.value(daoRewardAmount)()) {
+            throw;
+        }
+    }
+
     function getRandOraclizedPrice() returns (uint priceInWei) {
+        // TODO:
+
         priceInWei = 0;
         return;
     }
 
     function generateRandOraclized() returns (bytes32 randId){
+        // TODO:
+
         randId = 0;
         return;
     }
 
     function setReferrer(address player, address referrer) returns (bool isSet){
+        // TODO:
+
         isSet = false;
         return;
     }

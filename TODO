@@ -8,3 +8,6 @@
 6) Distribute sent money: 
      address daoRewardAccount = daoCasino.getCasinoRewardAddress();
      safeSend(daoRewardAccount, uint(daoReward));
+
+7) check newContract method
+8) test game

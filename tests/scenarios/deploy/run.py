@@ -4,7 +4,7 @@ from utils import extract_test_dict, seconds_in_future
 
 
 scenario_description = (
-    "Deploying of the DAO, DAOcreator and SampleOffer contracts in the "
+    "Deploying of the DAO, DAOcreator and SampleOffer, vdice_proposal contracts in the "
     "blockchain and noting down of their addresses"
 )
 
@@ -24,6 +24,10 @@ def run(ctx):
             "creator_bin": ctx.creator_bin,
             "offer_abi": ctx.offer_abi,
             "offer_bin": ctx.offer_bin,
+
+            "offer2_abi": ctx.offer2_abi,
+            "offer2_bin": ctx.offer2_bin,
+
             "offer_onetime": ctx.args.deploy_onetime_costs,
             "offer_total": ctx.args.deploy_total_costs,
             "min_tokens_to_create": ctx.args.deploy_min_tokens_to_create,
@@ -48,6 +52,8 @@ def run(ctx):
     print("DAO Creator address is: {}".format(ctx.dao_creator_addr))
     print("DAO address is: {}".format(ctx.dao_addr))
     print("SampleOffer address is: {}".format(ctx.offer_addr))
+    #print("vdice address is: {}".format(ctx.offer2_addr))
+
     with open(ctx.save_file, "w") as f:
         f.write(json.dumps({
             "dao_creator_addr": ctx.dao_creator_addr,

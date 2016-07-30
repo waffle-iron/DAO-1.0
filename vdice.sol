@@ -1,7 +1,19 @@
+/* How to Add already existing Game to DaoCasino?
 
-// example:
+**Please see vdice.sol and vdice_proposal.sol**
+
+1. Deploy your game contract with DaoCasino as a client. Game must reward DaoCasino. 
+2. Write proposal with "Add my game at 0xccaxadfadfbababababa address to Store" description and don't forget to include contract source code. You can even ask for JackPot money as an investment.
+The proposal can move money to your game directly or can move it to contractor (you).
+3. When proposal will be accepted (see diagram below) - proposal's sign() will be called and money (if required) will be moved from DaoCasino to proposal.  
+4. sign() must call addGameToStore(). 
+5. DaoCasino's addGameToStore() 
+*/
+
+// if in orher folder:
 // solc DAO=/home/tonykent/DAO vdice.sol
-import "DAO/DaoCasino.sol";
+
+import "./DaoCasino.sol";
 
 /// @notice Different helpers function go here
 library Helpers {
@@ -45,6 +57,8 @@ contract Dice {
      address owner;
      address public daoCasinoAddress;
      DAOCasinoInterface daoCasino;
+     
+     address public platformAddress;
 
      bool public isStopped = true; // until 'proposalIsAccepted' is called
 
@@ -70,7 +84,8 @@ contract Dice {
           //uint maxInvestorsInitial, 
           uint ownerEdgeInitial, 
           //uint divestFeeInitial,
-          address _daoCasinoAddress) 
+          address _daoCasinoAddress,
+          address _platformAddress) 
      {
           pwin = pwinInitial;
           edge = edgeInitial;
@@ -81,6 +96,7 @@ contract Dice {
           owner = msg.sender;
 
           daoCasinoAddress = _daoCasinoAddress;
+          platformAddress = _platformAddress;
           daoCasino = DAOCasinoInterface(_daoCasinoAddress);
      }
 
@@ -124,6 +140,12 @@ contract Dice {
           }
      }
 
+     function sendRewardToDao(address playerAddress, uint value) internal {
+          // calling DAOs method that will receive ether + split the reward
+          daoCasino.receiveGameReward.gas(safeGas).value(value)(playerAddress);
+     }
+
+     // this is called by a source of random numbers (Dao.Casino itself)
      function __callback(bytes32 myid, string result, bytes proof) {
           if (msg.sender != daoCasinoAddress) {
                throw;
@@ -173,10 +195,9 @@ contract Dice {
                // immediately send reward to DAO in case of user loss
                if(profitDiff>0){
                     int daoReward = (profitDiff*int(daoEdge))/10000;
-                    address daoRewardAccount = daoCasino.getCasinoRewardAddress();
+                    sendRewardToDao(thisBet.user, uint(daoReward));
 
-                    safeSend(daoRewardAccount, uint(daoReward));
-                    profitDiff -= platformReward;
+                    profitDiff -= daoReward;
                }
                
                // send profit to game owner 
@@ -233,10 +254,12 @@ contract Dice {
 
      // this is called from 'vdice_proposal' contract when proposal is accepted by DaoCasino
      // it gives us money for JackPot and we can start our game!
-     function proposalIsAccepted(){
-          // TODO: get invested in us by DaoCasino money. Check msg.value
+     function proposalIsAccepted() returns(bool){
+          // TODO: get money here!
 
           isStopped = false;
+
+          return true;
      }
 
      function() {

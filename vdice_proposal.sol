@@ -15,10 +15,11 @@ You should have received a copy of the GNU lesser General Public License
 along with the DAO.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// example:
+// if in other folder:
 // solc DAO=/home/tonykent/DAO vdice_proposal.sol
-import "DAO/DAO.sol";
-import "vdice.sol";
+
+import "./DAO.sol";
+import "./vdice.sol";
 
 // 1 - Set all variables
 // 2 - Deploy your Proposal 
@@ -52,6 +53,7 @@ contract SampleProposal {
     // Contractor.
     DAO public client; 
     Dice public vdiceGame;
+    address public platformAddress;
 
     bool public promiseValid; // is signed by DaoCasino?
 
@@ -110,9 +112,14 @@ contract SampleProposal {
         // Send funds to game
         // You can also use getDailyPayment() instead
         uint sendToGame = (msg.value - oneTimeCosts);    // must be positive (see check above)
-        uint constant safeGas = 25000;
-        if(!vdiceGame.proposalIsAccepted.call.gas(safeGas).value(sendToGame)()){
-            // TODO: handle that 
+        uint safeGas = 25000;
+        if(!vdiceGame.proposalIsAccepted.gas(safeGas).value(sendToGame)()){
+            throw;
+        }
+
+        // Add game to store
+        uint gameID = client.addGameToStore.gas(safeGas)(platformAddress,address(this));
+        if(0==gameID){
             throw;
         }
     }
