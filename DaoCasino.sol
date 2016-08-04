@@ -16,6 +16,9 @@ along with the DAO.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 contract DAOCasinoInterface {
+    /// @notice All games must send ether through this function
+    function receiveGameReward(address playerAddress, address refereAddress, address platformAddress); 
+
 // Rand:
     /// @notice Before calling rand - 
     function getRandOraclizedPrice() returns (uint priceInWei);
@@ -63,9 +66,7 @@ contract PlatformInterface {
     /// 1) Create 1st proposal "Give me money to develop cool new game"(return investment to that contract)
     /// 2) Create 2nd proposal "Please add my game to platform" (pass fee to that contract)
     /// 
-    function addGameToStore(
-        address platformAddress,
-        address proposalAddress) returns (uint gameID);
+    function addGameToStore(address proposalAddress) returns (uint gameID);
 
     function removeGameFromStore(uint gameID) returns (bool success);
 }

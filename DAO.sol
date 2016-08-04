@@ -856,9 +856,7 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
 
 // TODO: 
 // PlatformInterface
-    function addGameToStore(
-        address platformAddress,
-        address proposalAddress) returns (uint gameID)
+    function addGameToStore(address proposalAddress) returns (uint gameID)
     {
         // TODO:
         gameID = 123;
@@ -872,6 +870,16 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
     }
 
 // DAOCasinoInterface
+    function receiveGameReward(address playerAddress, address refererAddress, address platformAddress) {
+        // TODO: use playerAddress, refereAddress, platformAddress 
+
+        // send money to DAO reward account
+        var daoRewardAmount = 0; 
+        if (!DAOrewardAccount.call.value(daoRewardAmount)()) {
+            throw;
+        }
+    }
+
     function getRandOraclizedPrice() returns (uint priceInWei) {
         // TODO:
 

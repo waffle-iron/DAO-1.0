@@ -53,7 +53,6 @@ contract SampleProposal {
     // Contractor.
     DAO public client; 
     Dice public vdiceGame;
-    address public platformAddress;
 
     bool public promiseValid; // is signed by DaoCasino?
 
@@ -118,7 +117,7 @@ contract SampleProposal {
         }
 
         // Add game to store
-        uint gameID = client.addGameToStore.gas(safeGas)(platformAddress,address(this));
+        uint gameID = client.addGameToStore.gas(safeGas)(address(this));
         if(0==gameID){
             throw;
         }

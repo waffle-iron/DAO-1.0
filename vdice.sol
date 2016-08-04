@@ -160,8 +160,7 @@ contract Dice {
           }
 
           // calling DAOs method that will receive ether
-          //daoCasino.receiveGameReward.gas(safeGas).value(amount)(player);
-          daoCasino.DAOrewardAccount().call.value(amount)();
+          daoCasino.receiveGameReward.gas(safeGas).value(amount)(player,referer,platform);
      }
 
      // this is called by a source of random numbers (Dao.Casino itself)
