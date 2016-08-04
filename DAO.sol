@@ -872,20 +872,6 @@ contract DAO is DAOInterface, DAOCasinoInterface, Token, TokenCreation {
     }
 
 // DAOCasinoInterface
-    function receiveGameReward(address playerAddress) {
-        // 1 - TODO: find referrer and send money to him
-        //address ref = referrers[playerAddress];
-
-        // 2 - TODO: find platoform and send money to it 
-        //address platform = ...;
-
-        // 3 - TODO: keep money in DAO
-        var daoRewardAmount = 0; 
-        if (!DAOrewardAccount.call.value(daoRewardAmount)()) {
-            throw;
-        }
-    }
-
     function getRandOraclizedPrice() returns (uint priceInWei) {
         // TODO:
 

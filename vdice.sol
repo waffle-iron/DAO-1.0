@@ -13,7 +13,7 @@ The proposal can move money to your game directly or can move it to contractor (
 // if in orher folder:
 // solc DAO=/home/tonykent/DAO vdice.sol
 
-import "./DaoCasino.sol";
+import "./DAO.sol";
 
 /// @notice Different helpers function go here
 library Helpers {
@@ -56,7 +56,7 @@ contract Dice {
 
      address owner;
      address public daoCasinoAddress;
-     DAOCasinoInterface daoCasino;
+     DAO daoCasino;
      
      address public platformAddress;
 
@@ -67,6 +67,9 @@ contract Dice {
           uint bet; // amount
           uint roll; // result
           uint fee; 
+
+          address referer;
+          address platform;
      }
      mapping (bytes32 => Bet) bets;
      bytes32[] betsKeys;
@@ -81,9 +84,7 @@ contract Dice {
           uint edgeInitial, 
           uint maxWinInitial, 
           uint minBetInitial, 
-          //uint maxInvestorsInitial, 
           uint ownerEdgeInitial, 
-          //uint divestFeeInitial,
           address _daoCasinoAddress,
           address _platformAddress) 
      {
@@ -97,10 +98,10 @@ contract Dice {
 
           daoCasinoAddress = _daoCasinoAddress;
           platformAddress = _platformAddress;
-          daoCasino = DAOCasinoInterface(_daoCasinoAddress);
+          daoCasino = DAO(_daoCasinoAddress);
      }
 
-     function bet() {
+     function bet(address referer, address platform) {
           // 1 - Check all params
           if (isStopped) { 
                throw;
@@ -122,7 +123,7 @@ contract Dice {
 
           // 3 - Send query to RNG 
           bytes32 myid = daoCasino.generateRandOraclized.value(randFee)();
-          bets[myid] = Bet(msg.sender, betValue, 0, randFee);
+          bets[myid] = Bet(msg.sender, betValue, 0, randFee, referer, platform);
      }
 
      function numBets() constant returns(uint) {
@@ -140,9 +141,27 @@ contract Dice {
           }
      }
 
-     function sendRewardToDao(address playerAddress, uint value) internal {
-          // calling DAOs method that will receive ether + split the reward
-          daoCasino.receiveGameReward.gas(safeGas).value(value)(playerAddress);
+     /// @notice This method must split the reward into 4 separate streams
+     /// We are not doing that in DaoCasino
+     function sendRewardToDao(Bet bet, uint value) internal {
+          address player = bet.user;
+          address referer = bet.referer;
+          address platform = bet.platform;
+
+          uint amount = value / 4;
+          if(!(player.call.gas(safeGas).value(amount)())){
+               throw;     
+          }
+          if(!(referer.call.gas(safeGas).value(amount)())){
+               throw; 
+          }
+          if(!(platform.call.gas(safeGas).value(amount)())){
+               throw;
+          }
+
+          // calling DAOs method that will receive ether
+          //daoCasino.receiveGameReward.gas(safeGas).value(amount)(player);
+          daoCasino.DAOrewardAccount().call.value(amount)();
      }
 
      // this is called by a source of random numbers (Dao.Casino itself)
@@ -195,7 +214,7 @@ contract Dice {
                // immediately send reward to DAO in case of user loss
                if(profitDiff>0){
                     int daoReward = (profitDiff*int(daoEdge))/10000;
-                    sendRewardToDao(thisBet.user, uint(daoReward));
+                    sendRewardToDao(thisBet, uint(daoReward));
 
                     profitDiff -= daoReward;
                }
