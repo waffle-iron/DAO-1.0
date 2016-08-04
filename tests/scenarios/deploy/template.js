@@ -4,6 +4,9 @@ var _curator = web3.eth.accounts[0];
 var _teamAccount = _curator;
 
 var daoContract = web3.eth.contract($dao_abi);
+var daoAddress = 0;
+var platformAddress = 0;
+
 console.log("Creating DAOCreator Contract");
 var creatorContract = web3.eth.contract($creator_abi);
 var _daoCreatorContract = creatorContract.new(
@@ -37,6 +40,7 @@ var _daoCreatorContract = creatorContract.new(
 		        console.log("At DAO creation callback");
 		        if (typeof contract.address != 'undefined') {
                     addToTest('dao_address', contract.address);
+                    daoAddress = contract.address;
 		        }
 		    });
         checkWork();
@@ -86,6 +90,30 @@ var offer2 = offerContract2.new(
             console.log(e + " at Offer Contract creation!");
 	    } else if (typeof contract.address != 'undefined') {
             addToTest('offer2_address', contract.address);
+         }
+    }
+);
+checkWork();
+
+var vdiceContract = web3.eth.contract($vdice_abi);
+
+var offer2 = vdiceContract.new(
+    0,
+    0,
+    0,
+    0,
+    0,
+    daoAddress,
+    platformAddress,
+    {
+	    from: web3.eth.accounts[0],
+	    data: '$offer2_bin',
+	    gas: 3000000
+    }, function (e, contract) {
+	    if (e) {
+            console.log(e + " at Vdice Contract creation!");
+	    } else if (typeof contract.address != 'undefined') {
+            addToTest('vdice_address', contract.address);
          }
     }
 );

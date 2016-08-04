@@ -28,6 +28,9 @@ def run(ctx):
             "offer2_abi": ctx.offer2_abi,
             "offer2_bin": ctx.offer2_bin,
 
+            "vdice_abi": ctx.vdice_abi,
+            "vdice_bin": ctx.vdice_bin,
+
             "offer_onetime": ctx.args.deploy_onetime_costs,
             "offer_total": ctx.args.deploy_total_costs,
             "min_tokens_to_create": ctx.args.deploy_min_tokens_to_create,
@@ -43,6 +46,8 @@ def run(ctx):
         ctx.dao_addr = results['dao_address']
         ctx.offer_addr = results['offer_address']
         ctx.offer2_addr = results['offer2_address']
+        ctx.vdice_addr = results['vdice_address']
+
         ctx.dao_deployer_addr = results['dao_deployer_addr']
     except:
         print(
@@ -53,7 +58,8 @@ def run(ctx):
     print("DAO Creator address is: {}".format(ctx.dao_creator_addr))
     print("DAO address is: {}".format(ctx.dao_addr))
     print("SampleOffer address is: {}".format(ctx.offer_addr))
-    print("vdice address is: {}".format(ctx.offer2_addr))
+    print("vdice offer address is: {}".format(ctx.offer2_addr))
+    print("vdice address is: {}".format(ctx.vdice_addr))
 
     with open(ctx.save_file, "w") as f:
         f.write(json.dumps({

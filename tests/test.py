@@ -180,6 +180,11 @@ class TestContext():
         self.offer2_abi = res2["contracts"]["SampleProposal"]["abi"]
         self.offer2_bin = res2["contracts"]["SampleProposal"]["bin"]
 
+        vdice = os.path.join(self.vdice_dir, "vdice.sol")
+        res3 = self.compile_contract(vdice)
+        self.vdice_abi = res3["contracts"]["Dice"]["abi"]
+        self.vdice_bin = res3["contracts"]["Dice"]["bin"]
+
         # also delete the temporary created files
         rm_file(os.path.join(self.contracts_dir, "DAOcopy.sol"))
         rm_file(os.path.join(self.contracts_dir, "TokenCreationCopy.sol"))
