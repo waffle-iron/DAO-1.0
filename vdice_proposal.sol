@@ -54,7 +54,7 @@ contract SampleProposal {
     DAO public client; 
     Dice public vdiceGame;
 
-    bool public promiseValid; // is signed by DaoCasino?
+    bool public promiseValid = false; // is signed by DaoCasino?
 
     modifier callingRestriction {
         if (promiseValid) {
