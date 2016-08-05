@@ -33,13 +33,13 @@ def run(ctx):
     ctx.create_js_file(substitutions={
         "dao_abi": ctx.dao_abi,
         "dao_address": ctx.dao_addr,
-        "offer_abi": ctx.offer_abi,
-        "offer_address": ctx.offer_addr,
+        "offer_abi": ctx.offer2_abi,
+        "offer_address": ctx.offer2_addr,
         "offer_amount": amount,
-        "offer_desc": 'Test Proposal',
+        "offer_desc": 'Vdice Proposal',
         "proposal_deposit": ctx.args.proposal_deposit,
                                                # sign hash
-        "transaction_bytecode": '0x2ca15122',  # solc --hashes SampleOffer.sol
+        "transaction_bytecode": '0x2ca15122',  # solc --hashes vdice_proposal.sol
         "debating_period": ctx.args.proposal_debate_seconds,
         "votes": arr_str(votes),
         "should_halve_minquorum": str(ctx.args.proposal_halveminquorum).lower()
