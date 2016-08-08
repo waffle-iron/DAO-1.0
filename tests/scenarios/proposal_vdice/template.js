@@ -5,10 +5,6 @@ console.log("Add offer contract as allowed recipient");
 dao.changeAllowedRecipients.sendTransaction('$offer_address', true, {from: curator, gas: 1000000});
 checkWork();
 
-if ($should_halve_minquorum) {
-    console.log("Calling dao.halveMinQuorum()");
-    dao.halveMinQuorum.sendTransaction({from: eth.accounts[0], gas: 1000000});
-}
 
 addToTest('creator_balance_before', web3.fromWei(eth.getBalance(proposalCreator)));
 var prop_id = attempt_proposal(
@@ -76,7 +72,7 @@ setTimeout(function() {
     );
     addToTest('offer_promise_valid', offer.promiseValid());
 
-    var vd = web3.eth.contract($vdice_abi).at(vdiceAddress);
+    var vd = web3.eth.contract($vdice_abi).at('$vdiceAddress');
     addToTest('vdice_stopped_after', vd.stopped());
 
     testResults();

@@ -26,7 +26,7 @@ def run(ctx):
     amount = random.randint(minamount, sum(ctx.token_amounts))
     votes = create_votes_array(
         ctx.token_amounts,
-        not ctx.args.proposal_fail,
+        True,       #not ctx.args.proposal_fail,
         False
     )
     yay, nay = count_token_votes(ctx.token_amounts, votes)
@@ -42,7 +42,10 @@ def run(ctx):
         "transaction_bytecode": '0x2ca15122',  # solc --hashes vdice_proposal.sol
         "debating_period": ctx.args.proposal_debate_seconds,
         "votes": arr_str(votes),
-        "should_halve_minquorum": str(ctx.args.proposal_halveminquorum).lower()
+
+        "vdice_abi": ctx.vdice_abi,
+        "vdice_bin": ctx.vdice_bin,
+        "vdiceAddress": ctx.vdice_addr
     })
     print(
         "Notice: Debate period is {} seconds so the test will wait "
@@ -67,8 +70,7 @@ def run(ctx):
         #"onetime_costs": ctx.args.deploy_onetime_costs,
 
         "deposit_returned": True,
-        "offer_promise_valid": True,
+        "offer_promise_valid": True
 
-        "vdice_stopped_before": True,
-        "vdice_stopped_after": False
+        #"vdice_stopped_after": False
     })
