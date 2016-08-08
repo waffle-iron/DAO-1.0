@@ -47,6 +47,8 @@ def run(ctx):
         ctx.offer_addr = results['offer_address']
         ctx.offer2_addr = results['offer2_address']
         ctx.vdice_addr = results['vdice_address']
+        ctx.vdice_stopped_before = results['vdice_stopped_before']
+        #ctx.vdice_stopped_after = results['vdice_stopped_after']
 
         ctx.dao_deployer_addr = results['dao_deployer_addr']
     except:
@@ -60,6 +62,8 @@ def run(ctx):
     print("SampleOffer address is: {}".format(ctx.offer_addr))
     print("vdice offer address is: {}".format(ctx.offer2_addr))
     print("vdice address is: {}".format(ctx.vdice_addr))
+    print("vdice is stopped before: {}".format(ctx.vdice_stopped_before))
+    #print("vdice is stopped after: {}".format(ctx.vdice_stopped_after))
 
     with open(ctx.save_file, "w") as f:
         f.write(json.dumps({

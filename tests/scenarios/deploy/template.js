@@ -85,13 +85,15 @@ var offer2 = vdiceContract.new(
     platformAddress,
     {
 	    from: web3.eth.accounts[0],
-	    data: '$offer2_bin',
+	    data: '$vdice_bin',
 	    gas: 3000000
     }, function (e, contract) {
 	    if (e) {
             console.log(e + " at Vdice Contract creation!");
 	    } else if (typeof contract.address != 'undefined') {
             addToTest('vdice_address', contract.address);
+            addToTest('vdice_stopped_before', contract.stopped());
+
             vdiceAddress = contract.address;
          }
     }
@@ -119,6 +121,7 @@ var offer2 = offerContract2.new(
     }
 );
 checkWork();
+
 
 console.log("mining contract, please wait");
 miner.start(1);

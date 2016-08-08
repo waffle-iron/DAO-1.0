@@ -100,6 +100,10 @@ contract Dice {
           platformAddress = _platformAddress;
           daoCasino = DAO(_daoCasinoAddress);
      }
+     
+     function stopped() constant returns (bool _isStopped) {
+          return isStopped;
+     }
 
      function bet(address referer, address platform) {
           // 1 - Check all params

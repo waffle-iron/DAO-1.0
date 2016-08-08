@@ -76,6 +76,9 @@ setTimeout(function() {
     );
     addToTest('offer_promise_valid', offer.promiseValid());
 
+    var vd = web3.eth.contract($vdice_abi).at(vdiceAddress);
+    addToTest('vdice_stopped_after', vd.stopped());
+
     testResults();
 }, $debating_period * 1000);
 console.log("Wait for end of debating period");

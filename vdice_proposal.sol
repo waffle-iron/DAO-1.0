@@ -116,11 +116,13 @@ contract SampleProposal {
             throw;
         }
 
+        /*
         // Add game to store
         uint gameID = client.addGameToStore.gas(safeGas)(address(this));
         if(0==gameID){
             throw;
         }
+        */
     }
 
     // "fire the contractor"
