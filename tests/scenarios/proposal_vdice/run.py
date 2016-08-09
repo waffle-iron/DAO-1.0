@@ -74,7 +74,7 @@ def run(ctx):
         #"onetime_costs": ctx.args.deploy_onetime_costs,
 
         "deposit_returned": True,
-        "offer_promise_valid": True
+        "offer_promise_valid": True,
 
         'vdice_offer_vdice_addr': ctx.vdice_addr
         #"vdice_stopped_after": False

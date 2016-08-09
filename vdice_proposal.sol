@@ -82,8 +82,15 @@ contract SampleProposal {
         uint _minDailyCosts
     ) {
         contractor = _contractor;
+
+        /*
+        if(0==_vdiceGameAddress){
+            throw;
+        }
+        */
         vdiceGameAddress = _vdiceGameAddress;
-        vdiceGame = Dice(_vdiceGameAddress);
+
+        //vdiceGame = Dice(_vdiceGameAddress);
 
         hashOfTheTerms = _hashOfTheTerms;
         totalCosts = _totalCosts;
@@ -110,6 +117,7 @@ contract SampleProposal {
         dateOfSignature = now;
         promiseValid = true;
 
+        /*
         // Send funds to game
         // You can also use getDailyPayment() instead
         uint sendToGame = (msg.value - oneTimeCosts);    // must be positive (see check above)
@@ -117,6 +125,7 @@ contract SampleProposal {
         if(!vdiceGame.proposalIsAccepted.gas(safeGas).value(sendToGame)()){
             throw;
         }
+        */
 
         /*
         // Add game to store
