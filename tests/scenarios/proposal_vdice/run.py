@@ -45,7 +45,11 @@ def run(ctx):
 
         "vdice_abi": ctx.vdice_abi,
         "vdice_bin": ctx.vdice_bin,
-        "vdiceAddress": ctx.vdice_addr
+        "vdiceAddress": ctx.vdice_addr,
+
+        "offer2_abi": ctx.offer2_abi,
+        "offer2_bin": ctx.offer2_bin,
+        "offer2_addr": ctx.offer2_addr
     })
     print(
         "Notice: Debate period is {} seconds so the test will wait "
@@ -72,5 +76,6 @@ def run(ctx):
         "deposit_returned": True,
         "offer_promise_valid": True
 
+        'vdice_offer_vdice_addr': ctx.vdice_addr
         #"vdice_stopped_after": False
     })

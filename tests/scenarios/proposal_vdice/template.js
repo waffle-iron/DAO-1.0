@@ -72,6 +72,9 @@ setTimeout(function() {
     );
     addToTest('offer_promise_valid', offer.promiseValid());
 
+    // check if vdice contract address is set...
+    addToTest('vdice_offer_vdice_addr',offer.vdiceGameAddress());
+
     var vd = web3.eth.contract($vdice_abi).at('$vdiceAddress');
     addToTest('vdice_stopped_after', vd.stopped());
 

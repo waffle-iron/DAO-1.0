@@ -52,6 +52,7 @@ contract SampleProposal {
     // the Proposal, can adjust daily withdraw limit or even fire the
     // Contractor.
     DAO public client; 
+    address public vdiceGameAddress;
     Dice public vdiceGame;
 
     bool public promiseValid = false; // is signed by DaoCasino?
@@ -81,6 +82,7 @@ contract SampleProposal {
         uint _minDailyCosts
     ) {
         contractor = _contractor;
+        vdiceGameAddress = _vdiceGameAddress;
         vdiceGame = Dice(_vdiceGameAddress);
 
         hashOfTheTerms = _hashOfTheTerms;
