@@ -76,6 +76,6 @@ def run(ctx):
         "deposit_returned": True,
         "offer_promise_valid": True,
 
-        'vdice_offer_vdice_addr': ctx.vdice_addr
-        #"vdice_stopped_after": False
+        'vdice_offer_vdice_addr': ctx.vdice_addr,
+        "vdice_stopped_after": False
     })

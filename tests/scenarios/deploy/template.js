@@ -95,41 +95,40 @@ var offer2 = vdiceContract.new(
             addToTest('vdice_stopped_before', contract.stopped());
 
             vdiceAddress = contract.address;
+
+            var offerContract2 = web3.eth.contract($offer2_abi);
+            var offer2 = offerContract2.new(
+              _curator,       // contractor
+              vdiceAddress,   // vdice game address
+              '0x0',          // hash of the terms
+              web3.toWei($offer_total, "ether"), //total costs
+              web3.toWei($offer_onetime, "ether"), //one time costs
+              web3.toWei(1, "ether"), //min daily costs
+              {
+                   from: web3.eth.accounts[0],
+                   data: '$offer2_bin',
+                   gas: 3000000
+              }, function (e, contract) {
+                   if (e) {
+                      console.log(e + " at Offer Contract creation!");
+                   } else if (typeof contract.address != 'undefined') {
+                      addToTest('offer2_address', contract.address);
+                   }
+              }
+            );
+            checkWork();
+
+            // TODO: 
+            // vdiceAddress is 0 here ((((((
+            console.log("mining contract, please wait");
+            miner.start(1);
+            setTimeout(function() {
+                 miner.stop();
+                 testResults();
+            }, 3000);
+
          }
     }
 );
 checkWork();
-
-// TODO: 
-// vdiceAddress is 0 here ((((((
-
-var offerContract2 = web3.eth.contract($offer2_abi);
-var offer2 = offerContract2.new(
-    _curator,       // contractor
-    vdiceAddress,   // vdice game address
-    '0x0',          // hash of the terms
-    web3.toWei($offer_total, "ether"), //total costs
-    web3.toWei($offer_onetime, "ether"), //one time costs
-    web3.toWei(1, "ether"), //min daily costs
-    {
-         from: web3.eth.accounts[0],
-         data: '$offer2_bin',
-         gas: 3000000
-    }, function (e, contract) {
-         if (e) {
-            console.log(e + " at Offer Contract creation!");
-         } else if (typeof contract.address != 'undefined') {
-            addToTest('offer2_address', contract.address);
-         }
-    }
-);
-checkWork();
-
-console.log("mining contract, please wait");
-miner.start(1);
-setTimeout(function() {
-    miner.stop();
-    testResults();
-}, 3000);
-
 
