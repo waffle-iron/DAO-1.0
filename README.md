@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/DaoCasino/DAO-1.0.png?label=ready&title=Ready)](https://waffle.io/DaoCasino/DAO-1.0)
 # The DAO
 
 
